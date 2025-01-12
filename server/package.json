@@ -1,0 +1,12 @@
+{
+  "name": "fitness",
+  "version": "1.0.0",
+  "description": "stay healthy",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
