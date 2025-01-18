@@ -1,8 +1,7 @@
-import './App.css'
-import LoginForm from './components/Login'
+import AuthPage from './components/AuthPage'
 
 function App() {
-  return <LoginForm />
+  return <AuthPage />
 }
 
 export default App
