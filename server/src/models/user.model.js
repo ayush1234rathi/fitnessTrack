@@ -9,13 +9,6 @@ dotenv.config({
 
 const userSchema = new mongoose.Schema(
     {
-        username: {
-            type: String,
-            required: true,
-            trim: true,
-            lowercase: true,
-            unique: true,
-        },
         fullname: {
             type: String,
             required: true,
@@ -40,6 +33,7 @@ const userSchema = new mongoose.Schema(
         },
         gender: {
             type: String,
+            enum: ['male', 'female', 'other'],
         },
         weight: {
             type: Number,
@@ -75,7 +69,7 @@ userSchema.methods.generateAccessToken = function () {
       },
       process.env.ACCESS_TOKEN_SECRET,
       {
-        expiresIn: ACCESS_TOKEN_EXPIRY,
+        expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "1d",
       }
     );
   };
