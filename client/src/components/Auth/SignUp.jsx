@@ -1,6 +1,8 @@
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import authService from '../../services/auth.service';
+import { useNavigate } from 'react-router-dom';
 
 const SignUpSchema = Yup.object().shape({
   name: Yup.string().required('Required'),
@@ -12,16 +14,18 @@ const SignUpSchema = Yup.object().shape({
 });
 
 const SignUpForm = () => {
+  const navigate = useNavigate();
   return (
     <Formik
       initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
       validationSchema={SignUpSchema}
       onSubmit={async (values, { setSubmitting, setStatus }) => {
+        
         try {
-          const response = await axios.post('/api/signup', values);
-          console.log(response.data);
+          await authService.register({fullname:values.name, email:values.email, password:values.password});
+          navigate('/dashboard');
         } catch (error) {
-          setStatus('Sign-up failed. Please try again.');
+          setStatus(error.message || 'Sign-up failed. Please try again.');
         }
         setSubmitting(false);
       }}

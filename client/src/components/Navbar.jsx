@@ -1,11 +1,23 @@
 import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import { FaRunning } from "react-icons/fa";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import authService from "../services/auth.service";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      await authService.logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <nav className="bg-indigo-600 text-white shadow-lg">
@@ -64,7 +76,10 @@ const Navbar = () => {
             >
               Profile
             </NavLink>
-            <button className="block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-indigo-200">
+            <button 
+              onClick={handleLogout}
+              className="block w-full text-left px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-indigo-200"
+            >
               <IoIosLogOut className="text-center text-2xl inline" />
               Logout
             </button>
