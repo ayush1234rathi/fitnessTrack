@@ -2,6 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken"
+
 
 const TokenGenerator = async (userId) => {
   try {
@@ -11,7 +13,7 @@ const TokenGenerator = async (userId) => {
     await user.save({validateBeforeSave:false});
     return accessToken;
   } catch (error) {
-    
+      throw new ApiError(500, "Internal Server Error");
   }
 }
 
@@ -71,7 +73,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid){
-    throw new ApiError(404, "Password is correct");
+    throw new ApiError(404, "Password is invalid");
   }
 
   const accessToken = await TokenGenerator(user._id);
@@ -82,6 +84,8 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
+  
+  console.log(loggedInUser)
 
   return res
     .status(200)
@@ -98,4 +102,17 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 })
 
-export { registerUser, getAllUsers, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {
+  // console.log(req.user)
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+  .status(200)
+  .clearCookie("accessToken", options)
+  .json(new ApiResponse(200, {}, "User logged Out"));
+});
+
+export { registerUser, getAllUsers, loginUser, logoutUser };
