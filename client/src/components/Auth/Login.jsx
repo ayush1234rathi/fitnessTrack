@@ -12,9 +12,17 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center bg-gray-200">
+    <div className="flex items-center justify-center ">
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded">
-        <h2 className="text-center text-2xl font-bold mb-6">Sign in to your account</h2>
+        <h2 className="text-center text-2xl font-bold mb-3">Sign in to your account</h2>
+        <p className="mb-4 text-center text-sm text-gray-300">
+            Or
+            <button
+              onClick={()=>navigate('/signup')}
+              className="font-medium text-indigo-500 hover:text-indigo-600">
+                Create a new account
+            </button>
+          </p>
         <Formik
           initialValues={{ email: '', password: '' }}
           validationSchema={LoginSchema}
