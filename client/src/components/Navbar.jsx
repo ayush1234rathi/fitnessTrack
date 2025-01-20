@@ -13,7 +13,7 @@ const Navbar = () => {
     e.preventDefault();
     try {
       await authService.logout();
-      navigate('/');
+      navigate('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
