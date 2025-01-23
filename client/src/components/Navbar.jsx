@@ -8,9 +8,11 @@ import authService from "../services/auth.service";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const login = window.localStorage.getItem("isLogin");
 
   const handleLogout = async (e) => {
     e.preventDefault();
+    window.localStorage.removeItem("isLogin");
     try {
       await authService.logout();
       navigate('/login');
@@ -28,7 +30,7 @@ const Navbar = () => {
             FitTrack
           </Link>
 
-          <div className="md:hidden">
+          {login && <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-white focus:outline-none"
@@ -39,15 +41,15 @@ const Navbar = () => {
                 <HiOutlineMenu className="text-3xl" />
               )}
             </button>
-          </div>
+          </div>}
 
-          <div
+          {login && <div
             className={`${
               isMenuOpen ? "block" : "hidden"
             } absolute top-16 sm:gap-4 transition-all right-0  bg-indigo-600 md:static md:flex md:items-center md:space-x-4 md:w-auto`}
           >
             <NavLink
-              to="/dashboard"
+              to="/"
               className={({ isActive }) =>
                 `block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110  hover:text-indigo-200 ${
                   isActive ? "font-bold" : ""
@@ -83,8 +85,8 @@ const Navbar = () => {
               <IoIosLogOut className="text-center text-2xl inline" />
               Logout
             </button>
-          </div>
-        </div>
+          </div>}
+        </div> 
       </div>
     </nav>
   );

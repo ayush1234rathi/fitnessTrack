@@ -13,7 +13,7 @@ const LoginForm = () => {
 
   return (
     <div className="flex items-center justify-center ">
-      <div className="w-full max-w-md bg-white p-8 shadow-md rounded">
+      <div className="w-full max-w-md bg-white p-8 shadow-md rounded-md">
         <h2 className="text-center text-2xl font-bold mb-3">Sign in to your account</h2>
         <p className="mb-4 text-center text-sm text-gray-300">
             Or
@@ -29,7 +29,8 @@ const LoginForm = () => {
           onSubmit={async (values, { setSubmitting, setStatus }) => {
             try {
               await authService.login(values);
-              navigate('/dashboard');
+              window.localStorage.setItem("isLogin",true);
+              navigate('/');
             } catch (error) {
               setStatus(error.message || 'Login failed. Please check your credentials.');
             }
