@@ -115,4 +115,40 @@ const logoutUser = asyncHandler(async (req, res) => {
   .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
-export { registerUser, getAllUsers, loginUser, logoutUser };
+const deleteUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findByIdAndDelete(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "User deleted successfully"));
+});
+
+const updateUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const updates = req.body;
+console.log(updates);
+  if (updates.password) {
+    throw new ApiError(400, "Use password change endpoint to update password");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updates, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "User updated successfully"));
+});
+
+
+export { registerUser, getAllUsers, loginUser, logoutUser, deleteUser, updateUser };

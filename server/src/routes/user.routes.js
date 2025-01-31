@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllUsers, registerUser, loginUser, logoutUser } from "../controllers/user.controller.js";
+import { getAllUsers, registerUser, loginUser, logoutUser, deleteUser, updateUser } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -15,5 +15,11 @@ router.route("/login").post(loginUser);
 
 //logout user
 router.route("/logout").post(verifyJWT, logoutUser);
+
+//delete
+router.route("/delete/:userId").delete(verifyJWT, deleteUser);
+
+//update
+router.route("/update/:userId").patch(verifyJWT, updateUser);
 
 export default router;
