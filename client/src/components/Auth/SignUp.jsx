@@ -1,45 +1,55 @@
-import { Formik, Form, Field } from 'formik';
-import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
-import authService from '../../services/auth.service';
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
+import { useNavigate } from "react-router-dom";
+import authService from "../../services/auth.service";
 
 const SignUpSchema = Yup.object().shape({
-  name: Yup.string().required('Required'),
-  email: Yup.string().email('Invalid email').required('Required'),
-  password: Yup.string().min(8, 'Must be at least 8 characters').required('Required'),
+  name: Yup.string().required("Required"),
+  email: Yup.string().email("Invalid email").required("Required"),
+  password: Yup.string()
+    .min(8, "Must be at least 8 characters")
+    .required("Required"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref('password'), null], 'Passwords must match')
-    .required('Required'),
+    .oneOf([Yup.ref("password"), null], "Passwords must match")
+    .required("Required"),
 });
 
 const SignUpForm = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center grow">
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded">
-        <h2 className="text-center text-2xl font-bold mb-3">Sign in to your existing account</h2>
+        <h2 className="text-center text-2xl font-bold mb-3">
+          Sign in to your existing account
+        </h2>
         <p className="mb-4 text-center text-sm text-gray-300">
-            Or
-            <button
-              onClick={()=>navigate('/login')}
-              className="font-medium text-indigo-500 hover:text-indigo-600">
-                Create a new account
-            </button>
-          </p>
+          Or{" "}
+          <button
+            onClick={() => navigate("/login")}
+            className="font-medium text-indigo-500 hover:text-indigo-600"
+          >
+            Login if already created
+          </button>
+        </p>
         <Formik
-          initialValues={{ name: '', email: '', password: '', confirmPassword: '' }}
+          initialValues={{
+            name: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          }}
           validationSchema={SignUpSchema}
           onSubmit={async (values, { setSubmitting, setStatus }) => {
             try {
-              await authService.register({
-                fullname: values.name,
-                email: values.email,
-                password: values.password,
-              });
-              navigate('/login');
+              // await authService.register({
+              //   fullname: values.name,
+              //   email: values.email,
+              //   password: values.password,
+              // });
+              navigate("/login");
             } catch (error) {
-              setStatus(error.message || 'Sign-up failed. Please try again.');
+              setStatus(error.message || "Sign-up failed. Please try again.");
             }
             setSubmitting(false);
           }}
@@ -47,7 +57,10 @@ const SignUpForm = () => {
           {({ errors, touched, status, isSubmitting }) => (
             <Form className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Full Name
                 </label>
                 <Field
@@ -57,11 +70,16 @@ const SignUpForm = () => {
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
-                {errors.name && touched.name && <div className="text-red-600 text-xs mt-1">{errors.name}</div>}
+                {errors.name && touched.name && (
+                  <div className="text-red-600 text-xs mt-1">{errors.name}</div>
+                )}
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email address
                 </label>
                 <Field
@@ -71,11 +89,18 @@ const SignUpForm = () => {
                   required
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
-                {errors.email && touched.email && <div className="text-red-600 text-xs mt-1">{errors.email}</div>}
+                {errors.email && touched.email && (
+                  <div className="text-red-600 text-xs mt-1">
+                    {errors.email}
+                  </div>
+                )}
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Password
                 </label>
                 <Field
@@ -86,12 +111,17 @@ const SignUpForm = () => {
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
                 {errors.password && touched.password && (
-                  <div className="text-red-600 text-xs mt-1">{errors.password}</div>
+                  <div className="text-red-600 text-xs mt-1">
+                    {errors.password}
+                  </div>
                 )}
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Confirm Password
                 </label>
                 <Field
@@ -102,7 +132,9 @@ const SignUpForm = () => {
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
                 {errors.confirmPassword && touched.confirmPassword && (
-                  <div className="text-red-600 text-xs mt-1">{errors.confirmPassword}</div>
+                  <div className="text-red-600 text-xs mt-1">
+                    {errors.confirmPassword}
+                  </div>
                 )}
               </div>
 
@@ -114,7 +146,9 @@ const SignUpForm = () => {
                 Sign up
               </button>
 
-              {status && <div className="text-red-600 text-sm text-center">{status}</div>}
+              {status && (
+                <div className="text-red-600 text-sm text-center">{status}</div>
+              )}
             </Form>
           )}
         </Formik>
