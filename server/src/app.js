@@ -31,5 +31,8 @@ app.use(cookieParser());
 import userRouter from './routes/user.routes.js'
 app.use('/api/v1/users', userRouter);
 
+import workoutRouter from './routes/workout.routes.js';
+app.use('/api/v1/workout', workoutRouter);
+
 
 export { app };
