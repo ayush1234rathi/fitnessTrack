@@ -2,20 +2,18 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import jwt from "jsonwebtoken"
-
 
 const TokenGenerator = async (userId) => {
   try {
     const user = await User.findById(userId);
     const accessToken = await user.generateAccessToken();
 
-    await user.save({validateBeforeSave:false});
+    await user.save({ validateBeforeSave: false });
     return accessToken;
   } catch (error) {
-      throw new ApiError(500, "Internal Server Error");
+    throw new ApiError(500, "Internal Server Error");
   }
-}
+};
 
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password").lean();
@@ -24,9 +22,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 const registerUser = asyncHandler(async (req, res) => {
   const { fullname, email, password } = req.body;
-  if (
-    [fullname, email, password].some((field) => field?.trim() === "")
-  ) {
+  if ([fullname, email, password].some((field) => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -56,9 +52,9 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
-  if (!email){
+  if (!email) {
     throw new ApiError(400, "email required");
   }
 
@@ -66,13 +62,13 @@ const loginUser = asyncHandler(async (req, res) => {
     $or: [{ email }],
   });
 
-  if (!user){
-    throw new ApiError(404, "Email not found.")
+  if (!user) {
+    throw new ApiError(404, "Email not found.");
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
 
-  if (!isPasswordValid){
+  if (!isPasswordValid) {
     throw new ApiError(404, "Password is invalid");
   }
 
@@ -84,8 +80,8 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
-  
-  console.log(loggedInUser)
+
+  console.log(loggedInUser);
 
   return res
     .status(200)
@@ -100,7 +96,7 @@ const loginUser = asyncHandler(async (req, res) => {
         "User logged in successfully"
       )
     );
-})
+});
 
 const logoutUser = asyncHandler(async (req, res) => {
   // console.log(req.user)
@@ -110,9 +106,51 @@ const logoutUser = asyncHandler(async (req, res) => {
   };
 
   return res
-  .status(200)
-  .clearCookie("accessToken", options)
-  .json(new ApiResponse(200, {}, "User logged Out"));
+    .status(200)
+    .clearCookie("accessToken", options)
+    .json(new ApiResponse(200, {}, "User logged Out"));
 });
 
-export { registerUser, getAllUsers, loginUser, logoutUser };
+const deleteUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  const user = await User.findByIdAndDelete(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "User deleted successfully"));
+});
+
+const updateUser = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const updates = req.body;
+  console.log(updates);
+  if (updates.password) {
+    throw new ApiError(400, "Use password change endpoint to update password");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updates, {
+    new: true,
+    runValidators: true,
+  }).select("-password");
+
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, updatedUser, "User updated successfully"));
+});
+
+export {
+  registerUser,
+  getAllUsers,
+  loginUser,
+  logoutUser,
+  deleteUser,
+  updateUser,
+};

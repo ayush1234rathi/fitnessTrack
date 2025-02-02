@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const WorkoutSchema = new mongoose.Schema(
   {
@@ -14,7 +14,6 @@ const WorkoutSchema = new mongoose.Schema(
     workoutName: {
       type: String,
       required: true,
-      unique: true,
     },
     sets: {
       type: Number,
@@ -33,10 +32,10 @@ const WorkoutSchema = new mongoose.Schema(
     },
     date: {
       type: Date,
-      default: Date.now,
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Workout", WorkoutSchema);
+export const Workout = mongoose.model("Workout", WorkoutSchema);
