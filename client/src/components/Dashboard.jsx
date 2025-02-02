@@ -40,9 +40,7 @@ export default function Dashboard() {
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
-    // This will be removed once we fetch real data
     const fetchWorkoutData = () => {
-      // Mock workout data for the last 7 days and body part categories
       const dailyWorkouts = {
         "Abs": 4,
         "Shoulder": 3,
@@ -50,31 +48,28 @@ export default function Dashboard() {
         "Back": 6,
       };
 
-      // Mock calories burned for the last 7 days
-      const dailyCalories = [500, 700, 600, 550, 450, 480, 700]; // Calories burned for each day
+      const dailyCalories = [500, 700, 600, 550, 450, 480, 700];
 
       setWorkoutData([dailyWorkouts["Abs"], dailyWorkouts["Shoulder"], dailyWorkouts["Leg"], dailyWorkouts["Back"]]);
       setCaloriesBurned(dailyCalories);
     };
 
-    fetchWorkoutData(); // Calling the mock function
+    fetchWorkoutData();
   }, []);
 
-  // Bar chart data for calories burned
   const barData = {
     labels: getLast7Days(),
     datasets: [
       {
         label: "Calories Burned",
         data: caloriesBurned,
-        backgroundColor: "#FF6384", // Red for Calories
-        borderColor: "#FF6384",
+        backgroundColor: "#39ff14",
+        borderColor: "#39ff14",
         borderWidth: 1,
       },
     ],
   };
 
-  // Pie chart data for body parts worked on (Abs, Shoulder, Leg, Back)
   const pieData = {
     labels: ["Abs", "Shoulder", "Leg", "Back"],
     datasets: [
@@ -82,14 +77,13 @@ export default function Dashboard() {
         label: "Workout Breakdown by Category",
         data: workoutData,
         backgroundColor: [
-          "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", // Custom colors for the categories
+          "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0",
         ],
         hoverOffset: 5,
       },
     ],
   };
 
-  // Pie chart options for donut chart
   const pieOptions = {
     responsive: true,
     plugins: {
@@ -102,8 +96,8 @@ export default function Dashboard() {
         },
       },
     },
-    rotation: -0.7, // Rotation to make it look better
-    cutout: "70%", // This creates a donut chart effect (you can adjust this percentage)
+    rotation: -0.7,
+    cutout: "70%",
     animation: {
       animateRotate: true,
       animateScale: true,
@@ -115,41 +109,33 @@ export default function Dashboard() {
   };
 
   return (
-  <div className="grow m-6 md:mx-20 bg-gray-100 p-6 rounded-lg shadow-lg">
-    <h1 className="font-bold text-4xl text-gray-800 mb-6">Dashboard</h1>
-
-    {/* Statistics Cards */}
-    <div className="flex flex-wrap gap-6">
-      <CalorieCard title="Total Calories Burned" value={caloriesBurned.reduce((a, b) => a + b, 0)} />
-    </div>
-
-    {/* Charts Section */}
-    <div className="flex flex-col md:flex-row space-y-6 md:space-y-0 md:gap-6 mt-6">
-      {/* Bar Chart for Calories Burned */}
-      <div className="w-full md:w-1/3 bg-white p-6 shadow-md rounded-lg">
-        <h2 className="text-lg font-semibold text-gray-700 mb-3">Calories Burned (Last 7 Days)</h2>
-        <Bar data={barData} options={{ responsive: true }} />
+    <div className="bg-gray-100 min-h-screen flex grow mx-auto w-full max-w-6xl my-2 rounded-xl overflow-hidden">
+      <div className="bg-white shadow-lg border border-gray-200 w-full p-4">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Dashboard</h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <CalorieCard title="Total Calories Burned" value={caloriesBurned.reduce((a, b) => a + b, 0)} />
+        </div>
+        <div className="grid md:grid-cols-3 gap-6 mt-6">
+          <div className="bg-gray-50 shadow-md rounded-lg p-6 border border-gray-300">
+            <h2 className="text-lg font-semibold mb-3 text-blue-600">Calories Burned (Last 7 Days)</h2>
+            <Bar data={barData} options={{ responsive: true }} className="h-full" />
+          </div>
+          <div className="bg-gray-50 shadow-md rounded-lg p-6 border border-gray-300 flex justify-center">
+            <h2 className="absolute mt-4 text-lg font-semibold text-gray-700">Workout Breakdown</h2>
+            <Pie data={pieData} options={pieOptions} />
+          </div>
+          <div className="bg-gray-50 shadow-md rounded-lg p-6 border border-gray-300">
+            <h2 className="text-lg font-semibold mb-3 text-gray-700">Notes</h2>
+            <textarea
+              value={notes}
+              onChange={handleNotesChange}
+              placeholder="Add your notes here..."
+              className="w-full h-40 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+        </div>
       </div>
-
-      {/* Donut Pie Chart for Body Part Breakdown */}
-      <div className="w-full md:w-1/3 bg-white p-6 shadow-md rounded-lg flex justify-center">
-        <h2 className="absolute mt-4 text-lg font-semibold text-gray-700">Workout Breakdown</h2>
-        <Pie data={pieData} options={pieOptions} />
-      </div>
-
-    {/* Notes Section */}
-    <div className="mt-6 bg-white p-6 md:w-1/3 shadow-md rounded-lg">
-      <h2 className="text-lg font-semibold text-gray-700 mb-3">Notes</h2>
-      <textarea
-        value={notes}
-        onChange={handleNotesChange}
-        placeholder="Add your notes here..."
-        className="w-full h-40 p-4 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-      ></textarea>
     </div>
-    </div>
-
-  </div>
-);
-
+  );
 }

@@ -6,7 +6,7 @@ const Profile = () => {
   const [imagePreview, setImagePreview] = useState(null);
 
   return (
-    <div>
+    <div className="flex grow">
       
     </div>
   );

@@ -38,8 +38,8 @@ export default function Workouts() {
   };
 
   return (
-  <div className="p-6 bg-gray-100 min-h-screen flex justify-center items-center">
-    <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200 max-w-5xl w-full">
+  <div className="bg-gray-100 min-h-screen flex grow mx-auto w-full max-w-6xl my-2 rounded-xl overflow-hidden">
+    <div className="bg-white shadow-lg p-4 border border-gray-200 w-full">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Workout Tracker</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
