@@ -10,10 +10,4 @@ router.route("/add").post(verifyJWT, addWorkout);
 // Get All Workouts (For Logged-in User)
 router.route("/getWorkouts").get(verifyJWT, getWorkouts);
 
-// Update Workout
-router.route("/update/:workoutId").patch(verifyJWT, updateWorkout);
-
-// Delete Workout
-router.route("/delete/:workoutId").delete(verifyJWT, deleteWorkout);
-
 export default router;

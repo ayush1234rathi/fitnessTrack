@@ -3,12 +3,21 @@ import { Workout } from "../models/workout.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
-// Add Workout
+// Add Workout with a Specific Date
 const addWorkout = asyncHandler(async (req, res) => {
-  const { category, workoutName, sets, reps, weight, duration, caloriesBurned } = req.body;
-  
-  if (!category || !workoutName) {
-    throw new ApiError(400, "Category and workout name are required");
+  const {
+    category,
+    workoutName,
+    sets,
+    reps,
+    weight,
+    duration,
+    caloriesBurned,
+    date,
+  } = req.body;
+
+  if (!category || !workoutName || !date) {
+    throw new ApiError(400, "Category, workout name, and date are required");
   }
 
   const newWorkout = await Workout.create({
@@ -20,6 +29,7 @@ const addWorkout = asyncHandler(async (req, res) => {
     weight,
     duration,
     caloriesBurned,
+    date: new Date(date),
   });
 
   return res
@@ -27,50 +37,28 @@ const addWorkout = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, newWorkout, "Workout added successfully"));
 });
 
-// Get Workouts (For Logged-in User)
-const getWorkouts = asyncHandler(async (req, res) => {
-  const workouts = await Workout.find({ user: req.user._id }).lean();
+// Get Workouts by Date
+const getWorkoutsByDate = asyncHandler(async (req, res) => {
+  const { date } = req.params;
+  const formattedDate = new Date(date).setHours(0, 0, 0, 0);
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, workouts, "User workouts fetched successfully"));
-});
-
-// Update Workout
-const updateWorkout = asyncHandler(async (req, res) => {
-  const { workoutId } = req.params;
-
-  const updatedWorkout = await Workout.findOneAndUpdate(
-    { _id: workoutId, user: req.user._id },
-    req.body,
-    { new: true, runValidators: true }
-  );
-
-  if (!updatedWorkout) {
-    throw new ApiError(404, "Workout not found or unauthorized");
-  }
-
-  return res
-    .status(200)
-    .json(new ApiResponse(200, updatedWorkout, "Workout updated successfully"));
-});
-
-// Delete Workout
-const deleteWorkout = asyncHandler(async (req, res) => {
-  const { workoutId } = req.params;
-
-  const deletedWorkout = await Workout.findOneAndDelete({
-    _id: workoutId,
+  const workouts = await Workout.find({
     user: req.user._id,
-  });
-
-  if (!deletedWorkout) {
-    throw new ApiError(404, "Workout not found or unauthorized");
-  }
+    date: {
+      $gte: formattedDate,
+      $lt: new Date(formattedDate).setHours(23, 59, 59, 999),
+    },
+  }).lean();
 
   return res
     .status(200)
-    .json(new ApiResponse(200, {}, "Workout deleted successfully"));
+    .json(
+      new ApiResponse(
+        200,
+        workouts,
+        "Workouts for the selected date fetched successfully"
+      )
+    );
 });
 
-export { addWorkout, getWorkouts, updateWorkout, deleteWorkout };
+export { addWorkout, getWorkoutsByDate };
