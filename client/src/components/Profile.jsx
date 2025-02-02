@@ -1,7 +1,15 @@
-import React from 'react'
+import React, { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
-export default function Profile() {
+const Profile = () => {
+  const [imagePreview, setImagePreview] = useState(null);
+
   return (
-    <h1 className='flex grow'>Welcome to My Profile!!</h1>
-  )
-}
+    <div>
+      
+    </div>
+  );
+};
+
+export default Profile;

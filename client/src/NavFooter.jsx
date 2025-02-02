@@ -6,7 +6,7 @@ const NavFooter = ({ children }) => {
   return (
     <div>
       <Navbar />
-      <div className="">
+      <div className="flex slex-col justify-center items-center p-5">
       {children}
       </div>
       <Footer />
