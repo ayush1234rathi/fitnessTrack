@@ -29,7 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const existedUser = await User.findOne({
     $or: [{ email }],
   });
-
+  
   if (existedUser) {
     throw new ApiError(409, "User already exist");
   }
@@ -54,8 +54,8 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email) {
-    throw new ApiError(400, "email required");
+  if (email == "" || password == "") {
+    return res.status(400).json({ message: "Invalid credentials"});
   }
 
   const user = await User.findOne({
@@ -63,13 +63,13 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    throw new ApiError(404, "Email not found.");
+    return res.status(400).json({ message: "User not found"});
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
-    throw new ApiError(404, "Password is invalid");
+    return res.status(400).json({ message: "Invalid Password" });
   }
 
   const accessToken = await TokenGenerator(user._id);
@@ -146,6 +146,10 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedUser, "User updated successfully"));
 });
 
+const checkAuth = asyncHandler(async (req, res) => {
+  return res.status(200).json(req.user);
+})
+
 export {
   registerUser,
   getAllUsers,
@@ -153,4 +157,5 @@ export {
   logoutUser,
   deleteUser,
   updateUser,
+  checkAuth
 };

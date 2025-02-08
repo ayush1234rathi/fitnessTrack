@@ -1,7 +1,8 @@
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import authService from "../../services/auth.service";
+import { useAuthStore } from "../../store/useAuthStore.js";
+import { TbLoader3 } from "react-icons/tb";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
@@ -10,10 +11,10 @@ const LoginSchema = Yup.object().shape({
 
 const LoginForm = () => {
   const navigate = useNavigate();
-
+  const { login, isLoggingIn } = useAuthStore();
   const handleSignIn = () => {
-    navigate("/dashboard");
-  }
+    navigate("/");
+  };
 
   return (
     <div className="flex items-center justify-center h-full grow">
@@ -22,7 +23,7 @@ const LoginForm = () => {
           Sign in to your account
         </h2>
         <p className="mb-4 text-center text-sm text-gray-300">
-          Or{" "} 
+          Or{" "}
           <button
             onClick={() => navigate("/signup")}
             className="font-medium text-indigo-500 hover:text-indigo-600"
@@ -35,9 +36,7 @@ const LoginForm = () => {
           validationSchema={LoginSchema}
           onSubmit={async (values, { setSubmitting, setStatus }) => {
             try {
-              // await authService.login(values);
-              // window.localStorage.setItem("isLogin", true);
-              navigate("/");
+              login(values);
             } catch (error) {
               setStatus(
                 error.message || "Login failed. Please check your credentials."
@@ -46,7 +45,7 @@ const LoginForm = () => {
             setSubmitting(false);
           }}
         >
-          {({ errors, touched, status, isSubmitting }) => (
+          {({ errors, touched, status }) => (
             <Form className="space-y-6">
               <div>
                 <label
@@ -92,11 +91,17 @@ const LoginForm = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isLoggingIn}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                onClick={handleSignIn}
               >
-                Sign in
+                {isLoggingIn ? (
+                  <>
+                    <TbLoader3 className="animate-spin" />
+                    Logging in
+                  </>
+                ) : (
+                  "Sign in"
+                )}
               </button>
 
               {status && (

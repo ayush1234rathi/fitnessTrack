@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllUsers, registerUser, loginUser, logoutUser, deleteUser, updateUser } from "../controllers/user.controller.js";
+import { getAllUsers, registerUser, loginUser, logoutUser, deleteUser, updateUser, checkAuth } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -14,7 +14,10 @@ router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 
 //logout user
-router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/logout").post(logoutUser);
+
+//check auth
+router.route("/checkAuth").get(verifyJWT, checkAuth);
 
 //delete
 router.route("/delete/:userId").delete(verifyJWT, deleteUser);

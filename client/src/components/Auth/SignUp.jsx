@@ -1,7 +1,7 @@
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import authService from "../../services/auth.service";
+import { useAuthStore } from "../../store/useAuthStore.js";
 
 const SignUpSchema = Yup.object().shape({
   name: Yup.string().required("Required"),
@@ -16,6 +16,7 @@ const SignUpSchema = Yup.object().shape({
 
 const SignUpForm = () => {
   const navigate = useNavigate();
+  const { isSigningUp, signup } = useAuthStore();
 
   return (
     <div className="flex items-center justify-center grow">
@@ -40,21 +41,23 @@ const SignUpForm = () => {
             confirmPassword: "",
           }}
           validationSchema={SignUpSchema}
-          onSubmit={async (values, { setSubmitting, setStatus }) => {
+          onSubmit={async (values, { setStatus }) => {
             try {
-              // await authService.register({
-              //   fullname: values.name,
-              //   email: values.email,
-              //   password: values.password,
-              // });
-              navigate("/login");
+              if (
+                signup({
+                  fullname: values.name,
+                  email: values.email,
+                  password: values.password,
+                })
+              ) {
+                navigate("/login");
+              }
             } catch (error) {
               setStatus(error.message || "Sign-up failed. Please try again.");
             }
-            setSubmitting(false);
           }}
         >
-          {({ errors, touched, status, isSubmitting }) => (
+          {({ errors, touched, status }) => (
             <Form className="space-y-6">
               <div>
                 <label
@@ -140,10 +143,17 @@ const SignUpForm = () => {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSigningUp}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
               >
-                Sign up
+                {isSigningUp ? (
+                  <>
+                    <TbLoader3 className="animate-spin" />
+                    Signing up
+                  </>
+                ) : (
+                  "Sign up"
+                )}
               </button>
 
               {status && (

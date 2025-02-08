@@ -3,29 +3,19 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import { FaRunning } from "react-icons/fa";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
-import authService from "../services/auth.service";
+import { useAuthStore } from "../store/useAuthStore.js";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  // const login = window.localStorage.getItem("isLogin");
-
-  // const handleLogout = async (e) => {
-  //   e.preventDefault();
-  //   window.localStorage.removeItem("isLogin");
-  //   try {
-  //     await authService.logout();
-  //     navigate('/login');
-  //   } catch (error) {
-  //     console.error('Logout failed:', error);
-  //   }
-  // };
+  const { authUser } = useAuthStore();
+  const {logout} = useAuthStore();
 
   const navItems = [
     {
       id: 1,
       title: "Dashboard",
-      address: "/dashboard",
+      address: "/",
     },
     {
       id: 2,
@@ -40,7 +30,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-black text-white shadow-lg w-full">
+    <nav className="bg-black text-white shadow-lg w-full sticky top-0">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center justify-between h-16">
           <Link
@@ -64,32 +54,36 @@ const Navbar = () => {
             </button>
           </div>
 
-          <div
-            className={`${
-              isMenuOpen ? "block" : "hidden"
-            } absolute top-16 sm:gap-4 transition-all right-0  bg-black md:static md:flex md:items-center md:space-x-4 md:w-auto`}
-          >
-            {navItems.map((item) => (
-              <NavLink
-                key={item.id}
-                to={item.address}
-                className={({ isActive }) =>
-                  `block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110  hover:text-[#b5fe0e] ${
-                    isActive ? "font-bold" : ""
-                  }`
-                }
-              >
-                {item.title}
-              </NavLink>
-            ))}
-            <button
-              onClick={() => {navigate('/login')}}
-              className="block w-full text-left px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-[#b5fe0e]"
+          {authUser && (
+            <div
+              className={`${
+                isMenuOpen ? "block" : "hidden"
+              } absolute top-16 sm:gap-4 transition-all right-0  bg-black md:static md:flex md:items-center md:space-x-4 md:w-auto`}
             >
-              <IoIosLogOut className="text-center text-2xl inline" />
-              Logout
-            </button>
-          </div>
+              {navItems.map((item) => (
+                <NavLink
+                  key={item.id}
+                  to={item.address}
+                  className={({ isActive }) =>
+                    `block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110  hover:text-[#b5fe0e] ${
+                      isActive ? "font-bold" : ""
+                    }`
+                  }
+                >
+                  {item.title}
+                </NavLink>
+              ))}
+              <button
+                onClick={() => {
+                  logout();
+                }}
+                className="block w-full text-left px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-[#b5fe0e]"
+              >
+                <IoIosLogOut className="text-center text-2xl inline" />
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </nav>
