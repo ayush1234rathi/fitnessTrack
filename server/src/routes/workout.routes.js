@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addWorkout, getWorkouts, updateWorkout, deleteWorkout } from "../controllers/workout.controller.js";
+import { addWorkout, getUserDashboard, getWorkoutsByDate } from "../controllers/workout.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
@@ -8,6 +8,7 @@ const router = Router();
 router.route("/add").post(verifyJWT, addWorkout);
 
 // Get All Workouts (For Logged-in User)
-router.route("/getWorkouts").get(verifyJWT, getWorkouts);
+router.route("/getWorkouts").get(verifyJWT, getUserDashboard);
 
+router.route("/getWorkoutsByDate").get(verifyJWT, getWorkoutsByDate);
 export default router;
