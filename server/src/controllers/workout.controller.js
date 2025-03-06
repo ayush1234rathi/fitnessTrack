@@ -34,19 +34,16 @@ const getUserDashboard = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // 🔹 Calculate total workouts today
   const totalWorkouts = await Workout.countDocuments({
     user: userId,
     date: { $gte: startToday, $lt: endToday },
   });
 
-  // 🔹 Calculate average calories burnt per workout
   const avgCaloriesBurntPerWorkout =
     totalCaloriesBurnt.length > 0
       ? totalCaloriesBurnt[0].totalCaloriesBurnt / totalWorkouts
       : 0;
 
-  // 🔹 Get calorie data per workout category (for Pie Chart)
   const categoryCalories = await Workout.aggregate([
     { $match: { user: user._id, date: { $gte: startToday, $lt: endToday } } },
     {
@@ -57,14 +54,12 @@ const getUserDashboard = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // 🔹 Format Pie Chart Data
   const pieChartData = categoryCalories.map((category, index) => ({
     id: index,
     value: category.totalCaloriesBurnt,
     label: category._id,
   }));
 
-  // 🔹 Weekly Calories Burnt Data
   const weeks = [];
   const caloriesBurnt = [];
   for (let i = 6; i >= 0; i--) {
@@ -180,7 +175,6 @@ const getWorkoutsByDate = asyncHandler(async (req, res, next) => {
   console.log(todaysWorkouts)
   console.log(totalCaloriesBurnt)
   return res.status(200).json({ todaysWorkouts, totalCaloriesBurnt });
-  return res.json({message: "success"});
 });
 
 const calculateCaloriesBurnt = (weight, duration) => {

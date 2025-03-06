@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useUserStore } from "../store/useUserStore";
+import React, { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { TbLoader3 } from "react-icons/tb";
+import { useWorkoutstore } from "../store/useWorkoutStore";
 
 const Workouts = () => {
-  const { addWorkout, getWorkoutByDate, workouts, loading } = useUserStore();
+  const { addWorkout, getWorkoutByDate, workouts, addingWorkout, gettingWorkout } = useWorkoutstore();
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  
   const [workout, setWorkout] = useState({
     category: "",
     workoutName: "",
@@ -18,9 +19,13 @@ const Workouts = () => {
     date: new Date().toISOString().split("T")[0],
   });
 
-  useEffect(() => {
+  const fetchWorkouts = useCallback(() => {
     getWorkoutByDate(selectedDate);
-  }, [selectedDate]);
+  }, [getWorkoutByDate, selectedDate]);
+
+  useEffect(() => {
+    fetchWorkouts();
+  }, [fetchWorkouts]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -34,8 +39,8 @@ const Workouts = () => {
       toast.error("Fill the category");
       return;
     }
-    if (workout.sets.trim() === "") {
-      toast.error("Fill the sets");
+    if (workout.sets < 1) {
+      toast.error("Invalid set");
       return;
     }
     if (workout.reps.trim() === "") {
@@ -50,8 +55,20 @@ const Workouts = () => {
       toast.error("Fill the duration");
       return;
     }
-    console.log(workout);
+    // console.log(workout);
     addWorkout(workout);
+    getWorkoutByDate(selectedDate);
+
+    setWorkout({
+      category: "",
+      workoutName: "",
+      sets: "",
+      reps: "",
+      weight: "",
+      duration: "",
+      date: selectedDate,
+    });
+    toast.success("Workout added successfully!");
   };
 
   return (
@@ -81,10 +98,12 @@ const Workouts = () => {
           {/* Workouts Display */}
           <div className="md:col-span-2">
             <h2 className="text-xl font-semibold mb-4 text-gray-700">
-              Today's Workouts
+              {selectedDate === new Date().toISOString().split("T")[0]
+                ? "Today's Workouts"
+                : `Workouts for ${selectedDate}`}
             </h2>
             <div className="grid md:grid-cols-2 gap-5">
-              {workouts && workouts.todaysWorkouts ? (
+              {workouts?.todaysWorkouts && workouts.todaysWorkouts.length > 0 ? (
                 workouts.todaysWorkouts.map((workout) => (
                   <div
                     key={workout._id}
@@ -144,6 +163,7 @@ const Workouts = () => {
             <input
               type="number"
               placeholder="Sets"
+              min="1"
               value={workout.sets}
               onChange={(e) => setWorkout({ ...workout, sets: e.target.value })}
               className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full"
@@ -151,6 +171,7 @@ const Workouts = () => {
             <input
               type="number"
               placeholder="Reps"
+              min="1"
               value={workout.reps}
               onChange={(e) => setWorkout({ ...workout, reps: e.target.value })}
               className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full"
@@ -158,6 +179,7 @@ const Workouts = () => {
             <input
               type="number"
               placeholder="Weight (kg)"
+              min="0"
               value={workout.weight}
               onChange={(e) =>
                 setWorkout({ ...workout, weight: e.target.value })
@@ -165,8 +187,9 @@ const Workouts = () => {
               className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full"
             />
             <input
-              type="text"
+              type="number"
               placeholder="Duration (min)"
+              min="0"
               value={workout.duration}
               onChange={(e) =>
                 setWorkout({ ...workout, duration: e.target.value })
@@ -176,13 +199,13 @@ const Workouts = () => {
             <button
               type="submit"
               className="bg-[#39ff14] text-white font-semibold p-3 rounded-md col-span-2 hover:bg-[#2fd010] transition"
-              disabled={loading}
+              disabled={addingWorkout}
             >
-              {loading ? (
-                <>
-                  <TbLoader3 className="animate-spin" />
+              {addingWorkout ? (
+                <div className="flex justify-center items-center gap-2">
+                  <TbLoader3 className="animate-spin" size={20}/>
                   Logging in
-                </>
+                  </div>
               ) : (
                 "Add Workout"
               )}
