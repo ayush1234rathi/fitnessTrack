@@ -1,69 +1,75 @@
-import axios from 'axios';
+import axios from "axios";
 
-const authService = {
-  setAuthToken: (token) => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      localStorage.setItem('token', token);
+const API_URL = "http://localhost:8000/api/v1/users";
+
+// Create axios instance with default config
+const axiosInstance = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  },
+});
+
+const register = async (userData) => {
+  try {
+    const response = await axiosInstance.post("/register", userData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message || "Something went wrong");
     } else {
-      delete axios.defaults.headers.common['Authorization'];
-      localStorage.removeItem('token');
+      throw new Error("Network error. Please try again.");
     }
-  },
-
-  register: async (userData) => {
-    try {
-
-      const response = await axios.post(`http://localhost:8000/api/v1/users/register`, userData);
-      
-      const token = response.data.data?.accessToken;
-      if (token) {
-        authService.setAuthToken(token);
-      }
-      return response.data;
-    } catch (error) {
-      console.error('Registration error:', error.response?.data);
-      throw error.response?.data?.message || 'Registration failed';
-    }
-  },
-
-  login: async (credentials) => {
-    try {
-      const response = await axios.post(`http://localhost:8000/api/v1/users/login`, credentials);
-      
-      const token = response.data.data?.accessToken;
-      if (token) {
-        authService.setAuthToken(token);
-      }
-      return response.data;
-    } catch (error) {
-      console.error('Login error:', error.response?.data);
-      throw error.response?.data?.message || 'Login failed';
-    }
-  },
-
-  logout: async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (token) {
-
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        };
-        await axios.post(`http://localhost:8000/api/v1/users/logout`, {}, config);
-      }
-      authService.setAuthToken(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-      
-      authService.setAuthToken(null);
-    }
-  },
-  isAuthenticated: () => {
-    return !!localStorage.getItem('token');
-  },
+  }
 };
 
-export default authService;
+const login = async (credentials) => {
+  try {
+    const response = await axiosInstance.post("/login", credentials);
+    
+    if (response.data.data?.accessToken) {
+      localStorage.setItem("authToken", response.data.data.accessToken);
+    }
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(error.response.data.message || "Login failed");
+    } else {
+      throw new Error("Network error. Please try again.");
+    }
+  }
+};
+
+const logout = async () => {
+  try {
+    await axiosInstance.post("/logout");
+    localStorage.removeItem("authToken");
+  } catch (error) {
+    console.error("Logout error:", error);
+    localStorage.removeItem("authToken");
+  }
+};
+
+const isAuthenticated = () => {
+  return !!localStorage.getItem("authToken");
+};
+
+const getCurrentUser = async () => {
+  try {
+    const response = await axiosInstance.get("/CurUser");
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    throw error;
+  }
+};
+
+export default {
+  register,
+  login,
+  logout,
+  isAuthenticated,
+  getCurrentUser,
+};

@@ -1,38 +1,57 @@
-import Dashboard from "./components/Dashboard";
-import SignUpForm from "./components/Auth/SignUp";
-import LoginForm from "./components/Auth/Login";
-import Footer from "./components/Footer";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import { Routes, Route } from "react-router-dom";
-import NotFound from "./components/NotFound";
+import Footer from "./components/Footer";
+import Dashboard from "./components/Dashboard";
 import Workouts from "./components/Workouts";
 import Profile from "./components/Profile";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import NotFound from "./components/NotFound";
 import PrivateRoute from "./components/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
-  const login = window.localStorage.getItem("isLogin");
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      <Navbar />
-      <Routes>
-        {/* <Route path="/" element={login ? <Dashboard /> : <LoginForm />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/signup" element={<SignUpForm />} />
-        <Route path="/" element={<PrivateRoute />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="workout" element={<Workouts />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
-        <Route path="*" element={<NotFound />} /> */}
-        <Route path="/login" element={<LoginForm/>}/>
-        <Route path="/signup" element={<SignUpForm/>}/>
-        <Route path="/dashboard" element={<Dashboard/>}/>
-        <Route path="/workout" element={<Workouts/>}/>
-        <Route path="/profile" element={<Profile/>}/>
-      </Routes>
-
-      <Footer />
-    </div>
+    // <Router>
+      <AuthProvider>
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/workout"
+                element={
+                  <PrivateRoute>
+                    <Workouts />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </AuthProvider>
+    // </Router>
   );
 }
 

@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import authService from "../../services/auth.service";
 
-const Login = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
+    fullname: "",
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,10 +22,10 @@ const Login = () => {
     try {
       setLoading(true);
       setError("");
-      await login(formData);
-      navigate("/");
+      await authService.register(formData);
+      navigate("/login");
     } catch (err) {
-      setError(err.message || "Login failed. Please try again.");
+      setError(err.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -36,15 +36,15 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{" "}
             <Link
-              to="/register"
+              to="/login"
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              create a new account
+              sign in to your account
             </Link>
           </p>
         </div>
@@ -55,6 +55,21 @@ const Login = () => {
             </div>
           )}
           <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="fullname" className="sr-only">
+                Full Name
+              </label>
+              <input
+                id="fullname"
+                name="fullname"
+                type="text"
+                required
+                value={formData.fullname}
+                onChange={handleChange}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Full Name"
+              />
+            </div>
             <div>
               <label htmlFor="email" className="sr-only">
                 Email address
@@ -67,7 +82,7 @@ const Login = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Email address"
               />
             </div>
@@ -79,7 +94,7 @@ const Login = () => {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 value={formData.password}
                 onChange={handleChange}
@@ -95,7 +110,7 @@ const Login = () => {
               disabled={loading}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? "Creating account..." : "Create account"}
             </button>
           </div>
         </form>
@@ -104,4 +119,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register; 

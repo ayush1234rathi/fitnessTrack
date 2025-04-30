@@ -3,29 +3,27 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import { FaRunning } from "react-icons/fa";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
-import authService from "../services/auth.service";
+import { useAuth } from "../context/AuthContext";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-  // const login = window.localStorage.getItem("isLogin");
 
-  // const handleLogout = async (e) => {
-  //   e.preventDefault();
-  //   window.localStorage.removeItem("isLogin");
-  //   try {
-  //     await authService.logout();
-  //     navigate('/login');
-  //   } catch (error) {
-  //     console.error('Logout failed:', error);
-  //   }
-  // };
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   const navItems = [
     {
       id: 1,
       title: "Dashboard",
-      address: "/dashboard",
+      address: "/",
     },
     {
       id: 2,
@@ -67,28 +65,55 @@ const Navbar = () => {
           <div
             className={`${
               isMenuOpen ? "block" : "hidden"
-            } absolute top-16 sm:gap-4 transition-all right-0  bg-black md:static md:flex md:items-center md:space-x-4 md:w-auto`}
+            } absolute top-16 left-0 right-0 bg-black md:static md:flex md:items-center md:space-x-4 md:w-auto`}
           >
-            {navItems.map((item) => (
-              <NavLink
-                key={item.id}
-                to={item.address}
-                className={({ isActive }) =>
-                  `block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110  hover:text-[#b5fe0e] ${
-                    isActive ? "font-bold" : ""
-                  }`
-                }
-              >
-                {item.title}
-              </NavLink>
-            ))}
-            <button
-              onClick={() => {navigate('/login')}}
-              className="block w-full text-left px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-[#b5fe0e]"
-            >
-              <IoIosLogOut className="text-center text-2xl inline" />
-              Logout
-            </button>
+            {isAuthenticated ? (
+              <>
+                {navItems.map((item) => (
+                  <NavLink
+                    key={item.id}
+                    to={item.address}
+                    className={({ isActive }) =>
+                      `block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-[#b5fe0e] ${
+                        isActive ? "font-bold" : ""
+                      }`
+                    }
+                  >
+                    {item.title}
+                  </NavLink>
+                ))}
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-[#b5fe0e]"
+                >
+                  <IoIosLogOut className="text-center text-2xl inline" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    `block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-[#b5fe0e] ${
+                      isActive ? "font-bold" : ""
+                    }`
+                  }
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    `block px-4 py-2 md:inline md:p-0 transition ease-in-out duration-200 hover:scale-110 hover:text-[#b5fe0e] ${
+                      isActive ? "font-bold" : ""
+                    }`
+                  }
+                >
+                  Register
+                </NavLink>
+              </>
+            )}
           </div>
         </div>
       </div>

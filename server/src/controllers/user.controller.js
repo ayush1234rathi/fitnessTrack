@@ -15,6 +15,17 @@ const TokenGenerator = async (userId) => {
   }
 };
 
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id).select("-password");
+  
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, user, "User fetched successfully"));
+});
+
+
 const getAllUsers = asyncHandler(async (req, res) => {
   const users = await User.find().select("-password").lean();
   return res.json(users);
@@ -153,4 +164,5 @@ export {
   logoutUser,
   deleteUser,
   updateUser,
+  getCurrentUser,
 };

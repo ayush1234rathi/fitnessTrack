@@ -1,7 +1,7 @@
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import authService from "../../services/auth.service";
+import authService from "../../services/auth.service"; // Import the authService
 
 const SignUpSchema = Yup.object().shape({
   name: Yup.string().required("Required"),
@@ -21,7 +21,7 @@ const SignUpForm = () => {
     <div className="flex items-center justify-center grow">
       <div className="w-full max-w-md bg-white p-8 shadow-md rounded">
         <h2 className="text-center text-2xl font-bold mb-3">
-          Sign in to your existing account
+          Sign up for a new account
         </h2>
         <p className="mb-4 text-center text-sm text-gray-300">
           Or{" "}
@@ -42,11 +42,15 @@ const SignUpForm = () => {
           validationSchema={SignUpSchema}
           onSubmit={async (values, { setSubmitting, setStatus }) => {
             try {
-              // await authService.register({
-              //   fullname: values.name,
-              //   email: values.email,
-              //   password: values.password,
-              // });
+              const userData = {
+                fullname: values.name,
+                email: values.email,
+                password: values.password,
+              };
+              console.log(userData)
+              // Send the form data to the backend using authService
+              await authService.register(userData);
+              // On success, navigate to login page
               navigate("/login");
             } catch (error) {
               setStatus(error.message || "Sign-up failed. Please try again.");
