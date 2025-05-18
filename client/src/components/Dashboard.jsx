@@ -63,9 +63,9 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardData();
     // Set up auto-refresh every 10 seconds
-    const interval = setInterval(fetchDashboardData, 10000);
-    return () => clearInterval(interval);
-  }, []);
+    // const interval = setInterval(fetchDashboardData, 10000);
+    // return () => clearInterval(interval);
+  }, [setStats]);
 
   const chartData = {
     labels: stats.totalWeeksCaloriesBurnt.weeks,

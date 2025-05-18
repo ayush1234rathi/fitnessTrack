@@ -2,7 +2,6 @@ import axios from "axios";
 
 const API_URL = "http://localhost:8000/api/v1/workout";
 
-// Create axios instance with default config
 const axiosInstance = axios.create({
   baseURL: API_URL,
   withCredentials: true,
@@ -12,7 +11,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// Fetch workouts for a selected date
 const getWorkouts = async (date) => {
   try {
     const response = await axiosInstance.get(`/getWorkoutsByDate?date=${date}`);
@@ -26,7 +24,6 @@ const getWorkouts = async (date) => {
   }
 };
 
-// Add a new workout
 const addWorkout = async (workoutData) => {
   try {
     const response = await axiosInstance.post("/add", workoutData);
@@ -40,7 +37,6 @@ const addWorkout = async (workoutData) => {
   }
 };
 
-// Get dashboard statistics
 const getDashboardStats = async () => {
   try {
     const response = await axiosInstance.get("/getWorkouts");

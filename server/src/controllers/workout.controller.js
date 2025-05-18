@@ -15,7 +15,6 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
   const startToday = new Date(today.setHours(0, 0, 0, 0));
   const endToday = new Date(today.setHours(23, 59, 59, 999));
 
-  // 🔹 Calculate total calories burnt today
   const totalCaloriesBurnt = await Workout.aggregate([
     { $match: { user: userId, date: { $gte: startToday, $lt: endToday } } },
     {
@@ -26,19 +25,16 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
     },
   ]);
 
-  // 🔹 Calculate total workouts today
   const totalWorkouts = await Workout.countDocuments({
     user: userId,
     date: { $gte: startToday, $lt: endToday },
   });
 
-  // 🔹 Calculate average calories burnt per workout
   const avgCaloriesBurntPerWorkout =
     totalWorkouts > 0
       ? totalCaloriesBurnt[0]?.totalCaloriesBurnt / totalWorkouts
       : 0;
 
-  // 🔹 Get calorie data per workout category (for Pie Chart)
   const categoryCalories = await Workout.aggregate([
     { $match: { user: userId, date: { $gte: startToday, $lt: endToday } } },
     {
@@ -49,14 +45,12 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
     },
   ]);
 
-  // 🔹 Format Pie Chart Data
   const pieChartData = categoryCalories.map((category, index) => ({
     id: index,
     value: category.totalCaloriesBurnt,
     label: category._id,
   }));
 
-  // 🔹 Weekly Calories Burnt Data
   const weeks = [];
   const caloriesBurnt = [];
   for (let i = 6; i >= 0; i--) {
@@ -93,7 +87,6 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Add Workout with a Specific Date
 const addWorkout = asyncHandler(async (req, res) => {
   const { category, workoutName, sets, reps, weight, duration, date } =
     req.body;
@@ -121,7 +114,6 @@ const addWorkout = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, newWorkout, "Workout added successfully"));
 });
 
-// Get Workouts by Date
 const getWorkoutsByDate = asyncHandler(async (req, res, next) => {
   const userId = req.user?.id;
   const user = await User.findById(userId);
@@ -132,12 +124,11 @@ const getWorkoutsByDate = asyncHandler(async (req, res, next) => {
 
   let date = req.query.date ? new Date(req.query.date) : new Date();
   
-  // Ensure start and end of the day are properly formatted
   const startOfDay = new Date(date.setHours(0, 0, 0, 0));
   const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
   const todaysWorkouts = await Workout.find({
-    user: userId, // ✅ FIXED: Using 'user' instead of 'userId'
+    user: userId,
     date: { $gte: startOfDay, $lt: endOfDay },
   });
 
