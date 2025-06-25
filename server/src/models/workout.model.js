@@ -34,6 +34,22 @@ const WorkoutSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    done: {
+      type: Boolean,
+      default: false,
+    },
+    dayOfWeek: {
+      type: String,
+      enum: [
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+      ],
+    },
   },
   { timestamps: true }
 );

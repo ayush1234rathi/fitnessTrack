@@ -16,7 +16,7 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
   const endToday = new Date(today.setHours(23, 59, 59, 999));
 
   const totalCaloriesBurnt = await Workout.aggregate([
-    { $match: { user: userId, date: { $gte: startToday, $lt: endToday } } },
+    { $match: { user: userId, date: { $gte: startToday, $lt: endToday }, done: true } },
     {
       $group: {
         _id: null,
@@ -28,6 +28,7 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
   const totalWorkouts = await Workout.countDocuments({
     user: userId,
     date: { $gte: startToday, $lt: endToday },
+    done: true,
   });
 
   const avgCaloriesBurntPerWorkout =
@@ -36,7 +37,7 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
       : 0;
 
   const categoryCalories = await Workout.aggregate([
-    { $match: { user: userId, date: { $gte: startToday, $lt: endToday } } },
+    { $match: { user: userId, date: { $gte: startToday, $lt: endToday }, done: true } },
     {
       $group: {
         _id: "$category",
@@ -62,7 +63,7 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
     const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
     const weekData = await Workout.aggregate([
-      { $match: { user: userId, date: { $gte: startOfDay, $lt: endOfDay } } },
+      { $match: { user: userId, date: { $gte: startOfDay, $lt: endOfDay }, done: true } },
       {
         $group: {
           _id: null,
@@ -101,34 +102,60 @@ const ALLOWED_CATEGORIES = [
 ];
 
 const addWorkout = asyncHandler(async (req, res) => {
-  const { category, workoutName, sets, reps, weight, duration, date } =
-    req.body;
+  const { category, workoutName, sets, reps, weight, duration, dates, dayOfWeek } = req.body;
 
-  if (!category || !workoutName || !date) {
-    throw new ApiError(400, "Category, workout name, and date are required");
+  if (!category || !workoutName || !dates || !Array.isArray(dates) || dates.length === 0) {
+    throw new ApiError(400, "Category, workout name, and dates (array) are required");
   }
 
   if (!ALLOWED_CATEGORIES.includes(category)) {
     throw new ApiError(400, "Invalid category. Allowed: " + ALLOWED_CATEGORIES.join(", "));
   }
 
+  if (dayOfWeek) {
+    const allowedDays = [
+      'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+    ];
+    if (!allowedDays.includes(dayOfWeek)) {
+      throw new ApiError(400, "Invalid dayOfWeek. Allowed: " + allowedDays.join(", "));
+    }
+  }
+
   const caloriesBurned = calculateCaloriesBurnt(weight, duration);
 
-  const newWorkout = await Workout.create({
-    user: req.user._id,
-    category,
-    workoutName,
-    sets: sets || 0,
-    reps: reps || 0,
-    weight: weight || 0,
-    duration: duration || 0,
-    caloriesBurned,
-    date: new Date(date),
-  });
+  const createdWorkouts = await Promise.all(
+    dates.map(dateStr => {
+      // Use new Date(dateStr) directly, which will interpret T00:00:00 as local time
+      const localDate = new Date(dateStr);
+      return Workout.create({
+        user: req.user._id,
+        category,
+        workoutName,
+        sets: sets || 0,
+        reps: reps || 0,
+        weight: weight || 0,
+        duration: duration || 0,
+        caloriesBurned,
+        date: localDate,
+        done: false,
+        ...(dayOfWeek ? { dayOfWeek } : {}),
+      });
+    })
+  );
 
-  return res
-    .status(201)
-    .json(new ApiResponse(201, newWorkout, "Workout added successfully"));
+  return res.status(201).json(new ApiResponse(201, createdWorkouts, "Workouts added successfully"));
+});
+
+const toggleWorkoutDone = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+  const workout = await Workout.findOne({ _id: id, user: userId });
+  if (!workout) {
+    throw new ApiError(404, "Workout not found or not authorized");
+  }
+  workout.done = !workout.done;
+  await workout.save();
+  return res.status(200).json(new ApiResponse(200, workout, `Workout marked as ${workout.done ? 'done' : 'not done'}`));
 });
 
 const getWorkoutsByDate = asyncHandler(async (req, res, next) => {
@@ -139,18 +166,27 @@ const getWorkoutsByDate = asyncHandler(async (req, res, next) => {
     return next(new ApiError(404, "User not found"));
   }
 
-  let date = req.query.date ? new Date(req.query.date) : new Date();
-  
-  const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-  const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+  let dateStr = req.query.date;
+  let startOfDay, endOfDay;
+  if (dateStr) {
+    // Parse as local date
+    const [yyyy, mm, dd] = dateStr.split('-').map(Number);
+    startOfDay = new Date(yyyy, mm - 1, dd, 0, 0, 0, 0);
+    endOfDay = new Date(yyyy, mm - 1, dd, 23, 59, 59, 999);
+  } else {
+    const now = new Date();
+    startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+    endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+  }
 
+  // Find all workouts for this user where the date matches year, month, day (local)
   const todaysWorkouts = await Workout.find({
     user: userId,
-    date: { $gte: startOfDay, $lt: endOfDay },
+    date: { $gte: startOfDay, $lte: endOfDay }
   });
 
   const totalCaloriesBurnt = todaysWorkouts.reduce(
-    (total, workout) => total + workout.caloriesBurned,
+    (total, workout) => total + (workout.done ? workout.caloriesBurned : 0),
     0
   );
 
@@ -174,4 +210,4 @@ const calculateCaloriesBurnt = (weight, duration) => {
   return durationInMinutes * caloriesBurntPerMinute * weightInKg;
 };
 
-export { addWorkout, getWorkoutsByDate, getUserDashboard, deleteWorkout };
+export { addWorkout, getWorkoutsByDate, getUserDashboard, deleteWorkout, toggleWorkoutDone };
