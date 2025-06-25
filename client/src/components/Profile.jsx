@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import AlertMessage from "./AlertMessage";
+import Button from "./Button";
+
+// Utility for focus ring on avatar upload
+const handleKeyDown = (e, inputId) => {
+  if (e.key === "Enter" || e.key === " ") {
+    document.getElementById(inputId).click();
+  }
+};
 
 export default function Profile() {
   const [user, setUser] = useState({
@@ -9,14 +18,17 @@ export default function Profile() {
     gender: "",
     weight: "",
     height: "",
+    img: "",
   });
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchUserData();
+    // eslint-disable-next-line
   }, []);
 
   const fetchUserData = async () => {
@@ -51,7 +63,6 @@ export default function Profile() {
           withCredentials: true,
         }
       );
-      
       setUser(response.data.data);
       setSuccess("Profile updated successfully!");
       setError("");
@@ -64,91 +75,194 @@ export default function Profile() {
     }
   };
 
-  if (loading) return <div className="text-center p-4">Loading...</div>;
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Only image files are allowed");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File size should be less than 5MB");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("profilePicture", file);
+    try {
+      setUploading(true);
+      setError("");
+      const response = await axios.post(
+        "http://localhost:8000/api/v1/users/upload-profile-picture",
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setUser(response.data.data);
+      setSuccess("Profile picture updated successfully!");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      const errorMessage = err.response?.data?.message || "Failed to upload profile picture";
+      setError(errorMessage);
+      console.error("Error uploading profile picture:", err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-100">
+        <span className="text-lg text-gray-600 animate-pulse">Loading...</span>
+      </div>
+    );
 
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white shadow-lg rounded-lg p-6 max-w-md w-full border border-gray-200">
-        <h1 className="text-2xl font-bold text-gray-800 mb-4 text-center">Profile</h1>
-        
-        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
-        {success && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{success}</div>}
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-gray-700">Full Name</label>
+    <main className="bg-gradient-to-br from-gray-50 to-blue-100 min-h-screen flex items-center justify-center p-4">
+      <section className="bg-white shadow-2xl rounded-2xl p-8 max-w-lg w-full border border-gray-100 flex flex-col items-center">
+        {/* Heading */}
+        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 text-center font-sans tracking-tight">
+          Profile
+        </h1>
+
+        {/* Alerts */}
+        <AlertMessage type="error" message={error} />
+        <AlertMessage type="success" message={success} />
+
+        {/* Profile Avatar */}
+        <div className="mb-8 flex flex-col items-center">
+          <div className="relative w-32 h-32 mb-2 group">
+            <img
+              src={user.img || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullname || "User")}`}
+              alt="Profile"
+              className="w-full h-full rounded-full object-cover border-4 border-gray-200 shadow-md transition-transform duration-300 group-hover:scale-105"
+            />
+            <label
+              htmlFor="profilePicture"
+              className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+              aria-label="Upload profile picture"
+              tabIndex={0}
+              onKeyDown={(e) => handleKeyDown(e, "profilePicture")}
+            >
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" />
+              </svg>
+            </label>
             <input
+              type="file"
+              id="profilePicture"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+              disabled={uploading}
+            />
+          </div>
+          {uploading && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+        </div>
+
+        {/* Profile Form */}
+        <form onSubmit={handleSubmit} className="space-y-5 w-full" autoComplete="off">
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1" htmlFor="fullname">
+              Full Name
+            </label>
+            <input
+              id="fullname"
               type="text"
               name="fullname"
               value={user.fullname}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-sans text-base transition"
               required
+              autoFocus
             />
           </div>
           <div>
-            <label className="block text-gray-700">Email</label>
+            <label className="block text-gray-700 font-semibold mb-1" htmlFor="email">
+              Email
+            </label>
             <input
+              id="email"
               type="email"
               name="email"
               value={user.email}
               disabled
-              className="w-full p-3 border border-gray-300 bg-gray-100 rounded-lg shadow-sm cursor-not-allowed"
+              className="w-full p-3 border border-gray-300 bg-gray-100 rounded-lg cursor-not-allowed font-sans text-base"
             />
           </div>
-          <div>
-            <label className="block text-gray-700">Age</label>
-            <input
-              type="number"
-              name="age"
-              value={user.age}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1" htmlFor="age">
+                Age
+              </label>
+              <input
+                id="age"
+                type="number"
+                name="age"
+                value={user.age}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+                min={0}
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1" htmlFor="gender">
+                Gender
+              </label>
+              <select
+                id="gender"
+                name="gender"
+                value={user.gender}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+              >
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1" htmlFor="weight">
+                Weight (kg)
+              </label>
+              <input
+                id="weight"
+                type="number"
+                name="weight"
+                value={user.weight}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+                min={0}
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1" htmlFor="height">
+                Height (cm)
+              </label>
+              <input
+                id="height"
+                type="number"
+                name="height"
+                value={user.height}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+                min={0}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-gray-700">Gender</label>
-            <select
-              name="gender"
-              value={user.gender}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            >
-              <option value="">Select Gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-gray-700">Weight (kg)</label>
-            <input
-              type="number"
-              name="weight"
-              value={user.weight}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700">Height (cm)</label>
-            <input
-              type="number"
-              name="height"
-              value={user.height}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-          <button
+          <Button
             type="submit"
-            disabled={loading}
-            className="bg-blue-500 text-white font-semibold p-3 rounded-lg w-full hover:bg-blue-600 transition disabled:opacity-50"
+            loading={loading}
+            className="w-full"
           >
-            {loading ? "Updating..." : "Update Profile"}
-          </button>
+            Update Profile
+          </Button>
         </form>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

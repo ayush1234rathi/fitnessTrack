@@ -1,11 +1,14 @@
 import { Router } from "express";
-import { addWorkout, getUserDashboard, getWorkoutsByDate } from "../controllers/workout.controller.js";
+import { addWorkout, getUserDashboard, getWorkoutsByDate, deleteWorkout } from "../controllers/workout.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
 // Add Workout
 router.route("/add").post(verifyJWT, addWorkout);
+
+// Delete Workout
+router.route("/delete/:id").delete(verifyJWT, deleteWorkout);
 
 // Get All Workouts (For Logged-in User)
 router.route("/getWorkouts").get(verifyJWT, getUserDashboard);

@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Button from "./Button";
 
 const NotFound = () => {
   return (
@@ -10,12 +11,7 @@ const NotFound = () => {
         <p className="text-gray-500 mb-8">
           The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
         </p>
-        <Link
-          to="/"
-          className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          Go to Homepage
-        </Link>
+        <Button as={Link} to="/" className="mt-4">Go to Homepage</Button>
       </div>
     </div>
   );

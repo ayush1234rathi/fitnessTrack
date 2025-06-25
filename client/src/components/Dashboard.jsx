@@ -11,6 +11,7 @@ import {
   Legend,
 } from "chart.js";
 import workoutService from "../services/workout.service";
+import AlertMessage from "./AlertMessage";
 
 // Register chart components
 ChartJS.register(
@@ -92,8 +93,8 @@ const Dashboard = () => {
     },
   };
 
-  if (loading) return <div className="text-center p-4">Loading...</div>;
-  if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
+  if (loading) return <div className="flex justify-center items-center min-h-screen bg-gray-100"><span className="text-lg text-gray-600 animate-pulse">Loading...</span></div>;
+  if (error) return <AlertMessage type="error" message={error} className="mx-auto max-w-lg" />;
 
   return (
     <div className="bg-gray-100 min-h-screen p-4">

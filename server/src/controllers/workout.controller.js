@@ -140,6 +140,15 @@ const getWorkoutsByDate = asyncHandler(async (req, res, next) => {
   return res.status(200).json({ todaysWorkouts, totalCaloriesBurnt });
 });
 
+const deleteWorkout = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user._id;
+  const workout = await Workout.findOneAndDelete({ _id: id, user: userId });
+  if (!workout) {
+    throw new ApiError(404, "Workout not found or not authorized");
+  }
+  return res.status(200).json(new ApiResponse(200, {}, "Workout deleted successfully"));
+});
 
 const calculateCaloriesBurnt = (weight, duration) => {
   const weightInKg = parseFloat(weight) || 0;
@@ -148,4 +157,4 @@ const calculateCaloriesBurnt = (weight, duration) => {
   return durationInMinutes * caloriesBurntPerMinute * weightInKg;
 };
 
-export { addWorkout, getWorkoutsByDate, getUserDashboard };
+export { addWorkout, getWorkoutsByDate, getUserDashboard, deleteWorkout };

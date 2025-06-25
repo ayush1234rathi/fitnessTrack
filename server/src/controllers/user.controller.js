@@ -157,6 +157,44 @@ const updateUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, updatedUser, "User updated successfully"));
 });
 
+const uploadProfilePicture = asyncHandler(async (req, res) => {
+  try {
+    if (!req.file) {
+      throw new ApiError(400, "No file uploaded");
+    }
+
+    // Validate file type
+    if (!req.file.mimetype.startsWith('image/')) {
+      throw new ApiError(400, "Only image files are allowed");
+    }
+
+    // Validate file size (5MB limit)
+    if (req.file.size > 5 * 1024 * 1024) {
+      throw new ApiError(400, "File size should be less than 5MB");
+    }
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { img: req.file.path },
+      { new: true }
+    ).select("-password");
+
+    if (!user) {
+      throw new ApiError(404, "User not found");
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user, "Profile picture uploaded successfully"));
+  } catch (error) {
+    console.error("Profile picture upload error:", error);
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    throw new ApiError(500, "Failed to upload profile picture: " + error.message);
+  }
+});
+
 export {
   registerUser,
   getAllUsers,
@@ -165,4 +203,5 @@ export {
   deleteUser,
   updateUser,
   getCurrentUser,
+  uploadProfilePicture,
 };
