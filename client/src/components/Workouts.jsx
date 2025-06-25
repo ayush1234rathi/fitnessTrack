@@ -148,7 +148,24 @@ export default function Workouts() {
           <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
             <AlertMessage type="error" message={error} />
             <input type="text" placeholder="Workout Name" value={newWorkout.workoutName} onChange={(e) => setNewWorkout({ ...newWorkout, workoutName: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
-            <input type="text" placeholder="Category" value={newWorkout.category} onChange={(e) => setNewWorkout({ ...newWorkout, category: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
+            <select
+              value={newWorkout.category}
+              onChange={(e) => setNewWorkout({ ...newWorkout, category: e.target.value })}
+              className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full"
+              required
+            >
+              <option value="">Select Category</option>
+              <option value="Chest">Chest</option>
+              <option value="Back">Back</option>
+              <option value="Shoulders">Shoulders</option>
+              <option value="Biceps">Biceps</option>
+              <option value="Triceps">Triceps</option>
+              <option value="Abs / Core">Abs / Core</option>
+              <option value="Glutes">Glutes</option>
+              <option value="Quads">Quads</option>
+              <option value="Hamstrings">Hamstrings</option>
+              <option value="Calves">Calves</option>
+            </select>
             <input type="number" placeholder="Sets" value={newWorkout.sets} onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
             <input type="number" placeholder="Reps" value={newWorkout.reps} onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
             <input type="number" placeholder="Weight (kg)" value={newWorkout.weight} onChange={(e) => setNewWorkout({ ...newWorkout, weight: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>

@@ -87,12 +87,29 @@ const getUserDashboard = asyncHandler(async (req, res, next) => {
   });
 });
 
+const ALLOWED_CATEGORIES = [
+  "Chest",
+  "Back",
+  "Shoulders",
+  "Biceps",
+  "Triceps",
+  "Abs / Core",
+  "Glutes",
+  "Quads",
+  "Hamstrings",
+  "Calves"
+];
+
 const addWorkout = asyncHandler(async (req, res) => {
   const { category, workoutName, sets, reps, weight, duration, date } =
     req.body;
 
   if (!category || !workoutName || !date) {
     throw new ApiError(400, "Category, workout name, and date are required");
+  }
+
+  if (!ALLOWED_CATEGORIES.includes(category)) {
+    throw new ApiError(400, "Invalid category. Allowed: " + ALLOWED_CATEGORIES.join(", "));
   }
 
   const caloriesBurned = calculateCaloriesBurnt(weight, duration);
