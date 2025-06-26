@@ -115,16 +115,16 @@ export default function Profile() {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-100">
-        <span className="text-lg text-gray-600 animate-pulse">Loading...</span>
+      <div className="flex justify-center items-center min-h-screen bg-background">
+        <span className="text-lg text-accent animate-pulse">Loading...</span>
       </div>
     );
 
   return (
-    <main className="bg-gradient-to-br from-gray-50 to-blue-100 min-h-screen flex items-center justify-center p-4">
-      <section className="bg-white shadow-2xl rounded-2xl p-10 max-w-lg w-full border border-gray-100 flex flex-col items-center">
+    <main className="bg-background min-h-screen flex items-center justify-center p-4">
+      <section className="bg-card shadow-2xl rounded-2xl p-10 max-w-lg w-full border-2 border-primary flex flex-col items-center">
         {/* Heading */}
-        <h1 className="text-4xl font-extrabold text-blue-600 mb-8 text-center tracking-tight">Profile</h1>
+        <h1 className="text-4xl font-display font-extrabold text-accent mb-8 text-center tracking-widest uppercase drop-shadow-lg">Profile</h1>
 
         {/* Alerts */}
         <AlertMessage type="error" message={error} />
@@ -136,11 +136,11 @@ export default function Profile() {
             <img
               src={user.img || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullname || "User")}`}
               alt="Profile"
-              className="w-full h-full rounded-full object-cover border-4 border-blue-200 shadow-md transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full rounded-full object-cover border-4 border-accent shadow-md transition-transform duration-300 group-hover:scale-105"
             />
             <label
               htmlFor="profilePicture"
-              className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+              className="absolute bottom-0 right-0 bg-accent text-background p-2 rounded-full cursor-pointer hover:bg-background hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent transition"
               aria-label="Upload profile picture"
               tabIndex={0}
               onKeyDown={(e) => handleKeyDown(e, "profilePicture")}
@@ -158,13 +158,13 @@ export default function Profile() {
               disabled={uploading}
             />
           </div>
-          {uploading && <span className="text-xs text-gray-500 animate-pulse">Uploading...</span>}
+          {uploading && <span className="text-xs text-accent animate-pulse">Uploading...</span>}
         </div>
 
         {/* Profile Form */}
         <form onSubmit={handleSubmit} className="space-y-6 w-full" autoComplete="off">
           <div>
-            <label className="block text-gray-700 font-semibold mb-1" htmlFor="fullname">
+            <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="fullname">
               Full Name
             </label>
             <input
@@ -173,13 +173,13 @@ export default function Profile() {
               name="fullname"
               value={user.fullname}
               onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-sans text-base transition"
+              className="w-full p-3 border-2 border-primary rounded-lg focus:ring-2 focus:ring-accent font-sans text-base bg-background text-text placeholder:text-accent transition"
               required
               autoFocus
             />
           </div>
           <div>
-            <label className="block text-gray-700 font-semibold mb-1" htmlFor="email">
+            <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="email">
               Email
             </label>
             <input
@@ -188,12 +188,12 @@ export default function Profile() {
               name="email"
               value={user.email}
               disabled
-              className="w-full p-3 border border-gray-300 bg-gray-100 rounded-lg cursor-not-allowed font-sans text-base"
+              className="w-full p-3 border-2 border-primary bg-card rounded-lg cursor-not-allowed font-sans text-base text-accent"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-gray-700 font-semibold mb-1" htmlFor="age">
+              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="age">
                 Age
               </label>
               <input
@@ -202,12 +202,12 @@ export default function Profile() {
                 name="age"
                 value={user.age}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
                 min={0}
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-1" htmlFor="gender">
+              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="gender">
                 Gender
               </label>
               <select
@@ -215,7 +215,7 @@ export default function Profile() {
                 name="gender"
                 value={user.gender}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
               >
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
@@ -224,7 +224,7 @@ export default function Profile() {
               </select>
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-1" htmlFor="weight">
+              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="weight">
                 Weight (kg)
               </label>
               <input
@@ -233,12 +233,12 @@ export default function Profile() {
                 name="weight"
                 value={user.weight}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
                 min={0}
               />
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-1" htmlFor="height">
+              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="height">
                 Height (cm)
               </label>
               <input
@@ -247,7 +247,7 @@ export default function Profile() {
                 name="height"
                 value={user.height}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg font-sans text-base"
+                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
                 min={0}
               />
             </div>

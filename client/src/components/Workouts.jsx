@@ -148,20 +148,20 @@ export default function Workouts() {
   // Calculate total calories for done workouts only
   const totalCaloriesBurned = workouts.reduce((sum, w) => w.done ? sum + (w.caloriesBurned || 0) : sum, 0);
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-100"><span className="text-lg text-gray-600 animate-pulse">Loading...</span></div>;
+  if (loading) return <div className="flex justify-center items-center min-h-screen bg-background"><span className="text-lg text-accent animate-pulse">Loading...</span></div>;
   if (error) return <AlertMessage type="error" message={error} className="mx-auto max-w-lg" />;
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-blue-100 min-h-screen py-8 px-2 flex justify-center">
+    <div className="bg-background min-h-screen py-8 px-2 flex justify-center">
       <div className="max-w-7xl w-full flex flex-col md:flex-row gap-8">
         {/* Calendar Section */}
-        <div className="bg-white shadow-lg rounded-xl border p-6 w-full md:w-1/3 flex flex-col items-center">
-          <h2 className="text-lg font-semibold mb-2 text-blue-600 uppercase tracking-wide">Select Date</h2>
+        <div className="bg-card shadow-xl rounded-xl border-2 border-primary p-6 w-full md:w-1/3 flex flex-col items-center">
+          <h2 className="text-lg font-display text-accent mb-2 uppercase tracking-widest">Select Date</h2>
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
+            className="w-full p-3 border-2 border-primary rounded-lg shadow-sm focus:ring-2 focus:ring-accent focus:outline-none text-text bg-background placeholder:text-accent"
           />
         </div>
 
@@ -169,33 +169,33 @@ export default function Workouts() {
         <div className="flex-1 flex flex-col gap-8">
           {/* Workouts Display */}
           <div>
-            <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-tight">Workout Tracker</h1>
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">Today's Workouts</h2>
+            <h1 className="text-3xl font-display font-extrabold text-accent mb-6 text-center tracking-widest uppercase drop-shadow-lg">Workout Tracker</h1>
+            <h2 className="text-xl font-display text-accent mb-4 uppercase tracking-widest">Today's Workouts</h2>
             <div className="grid md:grid-cols-2 gap-6">
               {workouts.map((workout) => (
-                <div key={workout._id} className="relative bg-white shadow-lg rounded-xl border-l-4 border-blue-500 p-6 hover:shadow-xl transition-transform duration-200">
+                <div key={workout._id} className="relative bg-card shadow-xl rounded-xl border-l-4 border-primary p-6 hover:scale-[1.02] transition-transform duration-200">
                   <button
                     type="button"
                     aria-label="Delete workout"
-                    className="absolute top-3 right-3 text-red-500 hover:text-red-700 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-400"
+                    className="absolute top-3 right-3 text-primary hover:text-background hover:bg-primary p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
                     onClick={() => handleDelete(workout._id)}
                   >
                     <FiTrash2 className="w-5 h-5" />
                   </button>
-                  <span className="text-blue-500 text-sm font-semibold uppercase">#{workout.category}</span>
-                  <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2">{workout.workoutName}</h3>
-                  <p className="text-gray-600 text-sm mb-1">Count: {workout.sets} sets X {workout.reps} reps</p>
-                  <div className="flex items-center text-gray-500 text-sm mb-1">
+                  <span className="text-primary text-sm font-display uppercase">#{workout.category}</span>
+                  <h3 className="text-lg font-display font-bold text-text mt-1 mb-2 uppercase">{workout.workoutName}</h3>
+                  <p className="text-accent text-sm mb-1">Count: {workout.sets} sets X {workout.reps} reps</p>
+                  <div className="flex items-center text-secondary text-sm mb-1">
                     <span className="mr-4">🏋️ {workout.weight} kg</span>
                     <span>⏳ {workout.duration} min</span>
                   </div>
-                  <div className="mb-2 text-sm text-gray-600">
+                  <div className="mb-2 text-sm text-accent">
                     Calories Burned: {workout.caloriesBurned} kcal
                   </div>
                   <Button
                     type="button"
                     variant={workout.done ? "secondary" : "primary"}
-                    className={`mt-2 w-full ${workout.done ? 'border border-green-500 text-green-700 bg-green-50 hover:bg-green-100' : ''}`}
+                    className={`mt-2 w-full ${workout.done ? 'border-2 border-accent text-background bg-accent hover:bg-[#ffe94bcc]' : 'border-2 border-primary text-primary bg-background hover:bg-card'}`}
                     onClick={() => handleToggleDone(workout._id)}
                   >
                     {workout.done ? "Done" : "Mark as Done"}
@@ -203,21 +203,21 @@ export default function Workouts() {
                 </div>
               ))}
             </div>
-            <div className="mt-4 text-right font-semibold text-blue-700">
+            <div className="mt-4 text-right font-semibold text-primary">
               Total Calories Burned (Done): {totalCaloriesBurned} kcal
             </div>
           </div>
 
           {/* Add Workout Form */}
-          <div className="bg-white shadow-lg rounded-xl border p-8">
-            <h2 className="text-xl font-bold mb-4 text-blue-600 uppercase tracking-wide">Add Workout</h2>
+          <div className="bg-card shadow-xl rounded-xl border-2 border-primary p-8">
+            <h2 className="text-xl font-display font-bold mb-4 text-accent uppercase tracking-widest">Add Workout</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <AlertMessage type="error" message={error} />
-              <input type="text" placeholder="Workout Name" value={newWorkout.workoutName} onChange={(e) => setNewWorkout({ ...newWorkout, workoutName: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
+              <input type="text" placeholder="Workout Name" value={newWorkout.workoutName} onChange={(e) => setNewWorkout({ ...newWorkout, workoutName: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
               <select
                 value={newWorkout.category}
                 onChange={(e) => setNewWorkout({ ...newWorkout, category: e.target.value })}
-                className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+                className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent"
                 required
               >
                 <option value="">Select Category</option>
@@ -235,7 +235,7 @@ export default function Workouts() {
               <select
                 value={newWorkout.dayOfWeek}
                 onChange={(e) => setNewWorkout({ ...newWorkout, dayOfWeek: e.target.value })}
-                className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+                className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent"
               >
                 <option value="">(Optional) Select Day of Week</option>
                 <option value="Sunday">Sunday</option>
@@ -246,10 +246,10 @@ export default function Workouts() {
                 <option value="Friday">Friday</option>
                 <option value="Saturday">Saturday</option>
               </select>
-              <input type="number" placeholder="Sets" value={newWorkout.sets} onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
-              <input type="number" placeholder="Reps" value={newWorkout.reps} onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
-              <input type="number" placeholder="Weight (kg)" value={newWorkout.weight} onChange={(e) => setNewWorkout({ ...newWorkout, weight: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
-              <input type="number" placeholder="Duration (min)" value={newWorkout.duration} onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
+              <input type="number" placeholder="Sets" value={newWorkout.sets} onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
+              <input type="number" placeholder="Reps" value={newWorkout.reps} onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
+              <input type="number" placeholder="Weight (kg)" value={newWorkout.weight} onChange={(e) => setNewWorkout({ ...newWorkout, weight: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
+              <input type="number" placeholder="Duration (min)" value={newWorkout.duration} onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
               <Button type="submit" loading={loading} className="w-full">Add Workout</Button>
             </form>
           </div>

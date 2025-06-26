@@ -7,25 +7,27 @@ import { FiAlertCircle, FiCheckCircle, FiInfo } from "react-icons/fi";
  */
 export default function AlertMessage({ type = "info", message, className = "" }) {
   if (!message) return null;
-  let base = "flex items-center p-4 mb-4 rounded-lg shadow text-sm font-medium ";
+  let base = "flex items-center p-4 mb-4 rounded-lg shadow text-sm font-display uppercase font-bold ";
   let icon = null;
   let color = "";
   let border = "";
   switch (type) {
     case "error":
-      color = "bg-white text-red-700";
-      border = "border-l-4 border-red-500";
-      icon = <FiAlertCircle className="mr-3 text-xl text-red-500" />;
+      color = "bg-card text-primary";
+      border = "border-l-4 border-primary";
+      icon = <FiAlertCircle className="mr-3 text-xl text-primary" />;
       break;
     case "success":
-      color = "bg-white text-green-700";
-      border = "border-l-4 border-green-500";
-      icon = <FiCheckCircle className="mr-3 text-xl text-green-500" />;
+      color = "bg-card text-green-400";
+      border = "border-l-4 border-green-400";
+      icon = <FiCheckCircle className="mr-3 text-xl text-green-400" />;
       break;
     default:
-      color = "bg-white text-blue-700";
-      border = "border-l-4 border-blue-500";
-      icon = <FiInfo className="mr-3 text-xl text-blue-500" />;
+      color = "bg-card text-accent";
+      border = "border-l-4 border-accent";
+      color = "bg-[#181818] text-neon";
+      border = "border-l-4 border-neon";
+      icon = <FiInfo className="mr-3 text-xl text-neon" />;
   }
   return (
     <div className={`${base} ${color} ${border} ${className}`} role={type === "error" ? "alert" : "status"}>
