@@ -93,40 +93,40 @@ const Dashboard = () => {
     },
   };
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen bg-gray-100"><span className="text-lg text-gray-600 animate-pulse">Loading...</span></div>;
+  if (loading) return <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-100"><span className="text-lg text-gray-600 animate-pulse">Loading...</span></div>;
   if (error) return <AlertMessage type="error" message={error} className="mx-auto max-w-lg" />;
 
   return (
-    <div className="bg-gray-100 min-h-screen p-4">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+    <div className="bg-gradient-to-br from-gray-50 to-blue-100 min-h-screen py-8 px-2">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-8 text-center tracking-tight">Dashboard</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Total Calories Burned</h2>
-            <p className="text-3xl font-bold text-blue-600">{stats.totalCaloriesBurnt} kcal</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          <div className="bg-white p-8 rounded-xl shadow-lg border flex flex-col items-center">
+            <h2 className="text-lg font-semibold text-gray-500 mb-1 uppercase tracking-wide">Total Calories Burned</h2>
+            <p className="text-4xl font-extrabold text-blue-600">{stats.totalCaloriesBurnt} kcal</p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Total Workouts</h2>
-            <p className="text-3xl font-bold text-green-600">{stats.totalWorkouts}</p>
+          <div className="bg-white p-8 rounded-xl shadow-lg border flex flex-col items-center">
+            <h2 className="text-lg font-semibold text-gray-500 mb-1 uppercase tracking-wide">Total Workouts</h2>
+            <p className="text-4xl font-extrabold text-green-600">{stats.totalWorkouts}</p>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Average Calories per Workout</h2>
-            <p className="text-3xl font-bold text-purple-600">
+          <div className="bg-white p-8 rounded-xl shadow-lg border flex flex-col items-center">
+            <h2 className="text-lg font-semibold text-gray-500 mb-1 uppercase tracking-wide">Avg Calories/Workout</h2>
+            <p className="text-4xl font-extrabold text-purple-600">
               {Math.round(stats.avgCaloriesBurntPerWorkout)} kcal
             </p>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
+        <div className="bg-white p-8 rounded-xl shadow-lg border mb-8">
           <Line data={chartData} options={chartOptions} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Workout Categories</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
+          <div className="bg-white p-8 rounded-xl shadow-lg border">
+            <h2 className="text-lg font-semibold text-gray-500 mb-4 uppercase tracking-wide">Workout Categories</h2>
             <div className="space-y-2">
               {stats.pieChartData.map((category, index) => (
                 <div key={index} className="flex items-center justify-between">
@@ -137,8 +137,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Recent Achievements</h2>
+          <div className="bg-white p-8 rounded-xl shadow-lg border">
+            <h2 className="text-lg font-semibold text-gray-500 mb-4 uppercase tracking-wide">Recent Achievements</h2>
             <ul className="space-y-2">
               <li className="flex items-center text-gray-600">
                 <span className="mr-2">🏆</span>

@@ -122,11 +122,9 @@ export default function Profile() {
 
   return (
     <main className="bg-gradient-to-br from-gray-50 to-blue-100 min-h-screen flex items-center justify-center p-4">
-      <section className="bg-white shadow-2xl rounded-2xl p-8 max-w-lg w-full border border-gray-100 flex flex-col items-center">
+      <section className="bg-white shadow-2xl rounded-2xl p-10 max-w-lg w-full border border-gray-100 flex flex-col items-center">
         {/* Heading */}
-        <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 text-center font-sans tracking-tight">
-          Profile
-        </h1>
+        <h1 className="text-4xl font-extrabold text-blue-600 mb-8 text-center tracking-tight">Profile</h1>
 
         {/* Alerts */}
         <AlertMessage type="error" message={error} />
@@ -138,7 +136,7 @@ export default function Profile() {
             <img
               src={user.img || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullname || "User")}`}
               alt="Profile"
-              className="w-full h-full rounded-full object-cover border-4 border-gray-200 shadow-md transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full rounded-full object-cover border-4 border-blue-200 shadow-md transition-transform duration-300 group-hover:scale-105"
             />
             <label
               htmlFor="profilePicture"
@@ -164,7 +162,7 @@ export default function Profile() {
         </div>
 
         {/* Profile Form */}
-        <form onSubmit={handleSubmit} className="space-y-5 w-full" autoComplete="off">
+        <form onSubmit={handleSubmit} className="space-y-6 w-full" autoComplete="off">
           <div>
             <label className="block text-gray-700 font-semibold mb-1" htmlFor="fullname">
               Full Name

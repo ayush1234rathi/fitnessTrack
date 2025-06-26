@@ -148,48 +148,48 @@ export default function Workouts() {
   // Calculate total calories for done workouts only
   const totalCaloriesBurned = workouts.reduce((sum, w) => w.done ? sum + (w.caloriesBurned || 0) : sum, 0);
 
-  if (loading) return <div className="text-center p-4">Loading...</div>;
-  if (error) return <div className="text-center text-red-500 p-4">{error}</div>;
+  if (loading) return <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-blue-100"><span className="text-lg text-gray-600 animate-pulse">Loading...</span></div>;
+  if (error) return <AlertMessage type="error" message={error} className="mx-auto max-w-lg" />;
 
   return (
-    <div className="bg-gray-100 min-h-screen flex grow mx-auto w-full max-w-6xl my-2 rounded-xl overflow-hidden">
-      <div className="bg-white shadow-lg p-4 border border-gray-200 w-full">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Workout Tracker</h1>
+    <div className="bg-gradient-to-br from-gray-50 to-blue-100 min-h-screen py-8 px-2 flex justify-center">
+      <div className="max-w-7xl w-full flex flex-col md:flex-row gap-8">
+        {/* Calendar Section */}
+        <div className="bg-white shadow-lg rounded-xl border p-6 w-full md:w-1/3 flex flex-col items-center">
+          <h2 className="text-lg font-semibold mb-2 text-blue-600 uppercase tracking-wide">Select Date</h2>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-700"
+          />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Calendar Section */}
-          <div className="bg-gray-50 shadow-md rounded-lg p-5 border border-gray-300">
-            <h2 className="text-lg font-semibold mb-2 text-blue-600">Select Date</h2>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col gap-8">
           {/* Workouts Display */}
-          <div className="md:col-span-2">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-800 mb-6 text-center tracking-tight">Workout Tracker</h1>
             <h2 className="text-xl font-semibold mb-4 text-gray-700">Today's Workouts</h2>
-            <div className="grid md:grid-cols-2 gap-5">
+            <div className="grid md:grid-cols-2 gap-6">
               {workouts.map((workout) => (
-                <div key={workout._id} className="relative bg-gray-50 shadow-md rounded-lg p-4 border-l-4 border-[#39ff14] hover:scale-105 transition-transform duration-200">
+                <div key={workout._id} className="relative bg-white shadow-lg rounded-xl border-l-4 border-blue-500 p-6 hover:shadow-xl transition-transform duration-200">
                   <button
                     type="button"
                     aria-label="Delete workout"
-                    className="absolute top-2 right-2 text-red-500 hover:text-red-700 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-400"
+                    className="absolute top-3 right-3 text-red-500 hover:text-red-700 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-red-400"
                     onClick={() => handleDelete(workout._id)}
                   >
                     <FiTrash2 className="w-5 h-5" />
                   </button>
-                  <span className="text-[#39ff14] text-sm font-semibold">#{workout.category}</span>
-                  <h3 className="text-lg font-semibold text-gray-800">{workout.workoutName}</h3>
-                  <p className="text-gray-600 text-sm">Count: {workout.sets} sets X {workout.reps} reps</p>
-                  <div className="flex items-center text-gray-500 text-sm mt-2">
+                  <span className="text-blue-500 text-sm font-semibold uppercase">#{workout.category}</span>
+                  <h3 className="text-lg font-bold text-gray-800 mt-1 mb-2">{workout.workoutName}</h3>
+                  <p className="text-gray-600 text-sm mb-1">Count: {workout.sets} sets X {workout.reps} reps</p>
+                  <div className="flex items-center text-gray-500 text-sm mb-1">
                     <span className="mr-4">🏋️ {workout.weight} kg</span>
                     <span>⏳ {workout.duration} min</span>
                   </div>
-                  <div className="mt-2 text-sm text-gray-600">
+                  <div className="mb-2 text-sm text-gray-600">
                     Calories Burned: {workout.caloriesBurned} kcal
                   </div>
                   <Button
@@ -207,52 +207,52 @@ export default function Workouts() {
               Total Calories Burned (Done): {totalCaloriesBurned} kcal
             </div>
           </div>
-        </div>
 
-        {/* Add Workout Form */}
-        <div className="mt-6 bg-gray-50 shadow-md rounded-lg p-6 border border-gray-300">
-          <h2 className="text-xl font-semibold mb-4 text-gray-700">Add Workout</h2>
-          <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
-            <AlertMessage type="error" message={error} />
-            <input type="text" placeholder="Workout Name" value={newWorkout.workoutName} onChange={(e) => setNewWorkout({ ...newWorkout, workoutName: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
-            <select
-              value={newWorkout.category}
-              onChange={(e) => setNewWorkout({ ...newWorkout, category: e.target.value })}
-              className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full"
-              required
-            >
-              <option value="">Select Category</option>
-              <option value="Chest">Chest</option>
-              <option value="Back">Back</option>
-              <option value="Shoulders">Shoulders</option>
-              <option value="Biceps">Biceps</option>
-              <option value="Triceps">Triceps</option>
-              <option value="Abs / Core">Abs / Core</option>
-              <option value="Glutes">Glutes</option>
-              <option value="Quads">Quads</option>
-              <option value="Hamstrings">Hamstrings</option>
-              <option value="Calves">Calves</option>
-            </select>
-            <select
-              value={newWorkout.dayOfWeek}
-              onChange={(e) => setNewWorkout({ ...newWorkout, dayOfWeek: e.target.value })}
-              className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full"
-            >
-              <option value="">(Optional) Select Day of Week</option>
-              <option value="Sunday">Sunday</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-              <option value="Saturday">Saturday</option>
-            </select>
-            <input type="number" placeholder="Sets" value={newWorkout.sets} onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
-            <input type="number" placeholder="Reps" value={newWorkout.reps} onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
-            <input type="number" placeholder="Weight (kg)" value={newWorkout.weight} onChange={(e) => setNewWorkout({ ...newWorkout, weight: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
-            <input type="number" placeholder="Duration (min)" value={newWorkout.duration} onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })} className="border p-3 rounded-md focus:ring-2 focus:ring-blue-500 w-full" required/>
-            <Button type="submit" loading={loading} className="w-full">Add Workout</Button>
-          </form>
+          {/* Add Workout Form */}
+          <div className="bg-white shadow-lg rounded-xl border p-8">
+            <h2 className="text-xl font-bold mb-4 text-blue-600 uppercase tracking-wide">Add Workout</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <AlertMessage type="error" message={error} />
+              <input type="text" placeholder="Workout Name" value={newWorkout.workoutName} onChange={(e) => setNewWorkout({ ...newWorkout, workoutName: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
+              <select
+                value={newWorkout.category}
+                onChange={(e) => setNewWorkout({ ...newWorkout, category: e.target.value })}
+                className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+                required
+              >
+                <option value="">Select Category</option>
+                <option value="Chest">Chest</option>
+                <option value="Back">Back</option>
+                <option value="Shoulders">Shoulders</option>
+                <option value="Biceps">Biceps</option>
+                <option value="Triceps">Triceps</option>
+                <option value="Abs / Core">Abs / Core</option>
+                <option value="Glutes">Glutes</option>
+                <option value="Quads">Quads</option>
+                <option value="Hamstrings">Hamstrings</option>
+                <option value="Calves">Calves</option>
+              </select>
+              <select
+                value={newWorkout.dayOfWeek}
+                onChange={(e) => setNewWorkout({ ...newWorkout, dayOfWeek: e.target.value })}
+                className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700"
+              >
+                <option value="">(Optional) Select Day of Week</option>
+                <option value="Sunday">Sunday</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+              </select>
+              <input type="number" placeholder="Sets" value={newWorkout.sets} onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
+              <input type="number" placeholder="Reps" value={newWorkout.reps} onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
+              <input type="number" placeholder="Weight (kg)" value={newWorkout.weight} onChange={(e) => setNewWorkout({ ...newWorkout, weight: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
+              <input type="number" placeholder="Duration (min)" value={newWorkout.duration} onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })} className="border p-3 rounded-lg focus:ring-2 focus:ring-blue-500 w-full text-gray-700" required/>
+              <Button type="submit" loading={loading} className="w-full">Add Workout</Button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

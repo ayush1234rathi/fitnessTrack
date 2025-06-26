@@ -22,10 +22,10 @@ const SignUpForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-100 py-12 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
-        <div className="flex flex-col items-center mb-6">
-          <FaRunning className="text-4xl text-blue-600 mb-2" />
-          <h2 className="text-2xl font-bold mb-3">Sign up for a new account</h2>
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-10 border border-gray-100">
+        <div className="flex flex-col items-center mb-8">
+          <FaRunning className="text-5xl text-blue-600 mb-3" />
+          <h2 className="text-2xl font-bold mb-3 text-blue-600 tracking-tight">Sign up for a new account</h2>
           <p className="mb-4 text-center text-sm text-gray-500">
             Or{' '}
             <button
@@ -73,7 +73,7 @@ const SignUpForm = () => {
                   name="name"
                   type="text"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-base transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
                 />
                 {errors.name && touched.name && (
                   <div className="text-red-600 text-xs mt-1">{errors.name}</div>
@@ -88,7 +88,7 @@ const SignUpForm = () => {
                   name="email"
                   type="email"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-base transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
                 />
                 {errors.email && touched.email && (
                   <div className="text-red-600 text-xs mt-1">{errors.email}</div>
@@ -103,7 +103,7 @@ const SignUpForm = () => {
                   name="password"
                   type="password"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-base transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
                 />
                 {errors.password && touched.password && (
                   <div className="text-red-600 text-xs mt-1">{errors.password}</div>
@@ -118,7 +118,7 @@ const SignUpForm = () => {
                   name="confirmPassword"
                   type="password"
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-base transition"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
                 />
                 {errors.confirmPassword && touched.confirmPassword && (
                   <div className="text-red-600 text-xs mt-1">{errors.confirmPassword}</div>

@@ -36,10 +36,10 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-100 py-12 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
-        <div className="flex flex-col items-center mb-6">
-          <FaRunning className="text-4xl text-blue-600 mb-2" />
-          <h2 className="text-3xl font-extrabold text-gray-900 mb-1">Sign in to your account</h2>
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-10 border border-gray-100">
+        <div className="flex flex-col items-center mb-8">
+          <FaRunning className="text-5xl text-blue-600 mb-3" />
+          <h2 className="text-3xl font-extrabold text-blue-600 mb-2 tracking-tight">Sign in to your account</h2>
           <p className="text-sm text-gray-600">
             Or{' '}
             <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 underline">
@@ -62,7 +62,7 @@ const Login = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-base transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
                 placeholder="Email address"
               />
             </div>
@@ -78,7 +78,7 @@ const Login = () => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-base transition"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
                 placeholder="Password"
               />
             </div>
