@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import AlertMessage from "./AlertMessage";
-import Button from "./Button";
+import ProfileAvatar from "./Profile/ProfileAvatar";
+import ProfileForm from "./Profile/ProfileForm";
 
 // Utility for focus ring on avatar upload
 const handleKeyDown = (e, inputId) => {
@@ -130,136 +131,8 @@ export default function Profile() {
         <AlertMessage type="error" message={error} />
         <AlertMessage type="success" message={success} />
 
-        {/* Profile Avatar */}
-        <div className="mb-8 flex flex-col items-center">
-          <div className="relative w-32 h-32 mb-2 group">
-            <img
-              src={user.img || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullname || "User")}`}
-              alt="Profile"
-              className="w-full h-full rounded-full object-cover border-4 border-accent shadow-md transition-transform duration-300 group-hover:scale-105"
-            />
-            <label
-              htmlFor="profilePicture"
-              className="absolute bottom-0 right-0 bg-accent text-background p-2 rounded-full cursor-pointer hover:bg-background hover:text-accent focus:outline-none focus:ring-2 focus:ring-accent transition"
-              aria-label="Upload profile picture"
-              tabIndex={0}
-              onKeyDown={(e) => handleKeyDown(e, "profilePicture")}
-            >
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" />
-              </svg>
-            </label>
-            <input
-              type="file"
-              id="profilePicture"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              disabled={uploading}
-            />
-          </div>
-          {uploading && <span className="text-xs text-accent animate-pulse">Uploading...</span>}
-        </div>
-
-        {/* Profile Form */}
-        <form onSubmit={handleSubmit} className="space-y-6 w-full" autoComplete="off">
-          <div>
-            <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="fullname">
-              Full Name
-            </label>
-            <input
-              id="fullname"
-              type="text"
-              name="fullname"
-              value={user.fullname}
-              onChange={handleChange}
-              className="w-full p-3 border-2 border-primary rounded-lg focus:ring-2 focus:ring-accent font-sans text-base bg-background text-text placeholder:text-accent transition"
-              required
-              autoFocus
-            />
-          </div>
-          <div>
-            <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              value={user.email}
-              disabled
-              className="w-full p-3 border-2 border-primary bg-card rounded-lg cursor-not-allowed font-sans text-base text-accent"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="age">
-                Age
-              </label>
-              <input
-                id="age"
-                type="number"
-                name="age"
-                value={user.age}
-                onChange={handleChange}
-                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
-                min={0}
-              />
-            </div>
-            <div>
-              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="gender">
-                Gender
-              </label>
-              <select
-                id="gender"
-                name="gender"
-                value={user.gender}
-                onChange={handleChange}
-                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
-              >
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="weight">
-                Weight (kg)
-              </label>
-              <input
-                id="weight"
-                type="number"
-                name="weight"
-                value={user.weight}
-                onChange={handleChange}
-                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
-                min={0}
-              />
-            </div>
-            <div>
-              <label className="block text-accent font-display mb-1 uppercase tracking-widest" htmlFor="height">
-                Height (cm)
-              </label>
-              <input
-                id="height"
-                type="number"
-                name="height"
-                value={user.height}
-                onChange={handleChange}
-                className="w-full p-3 border-2 border-primary rounded-lg font-sans text-base bg-background text-text placeholder:text-accent transition"
-                min={0}
-              />
-            </div>
-          </div>
-          <Button
-            type="submit"
-            loading={loading}
-            className="w-full"
-          >
-            Update Profile
-          </Button>
-        </form>
+        <ProfileAvatar user={user} uploading={uploading} handleImageUpload={handleImageUpload} handleKeyDown={handleKeyDown} />
+        <ProfileForm user={user} handleChange={handleChange} handleSubmit={handleSubmit} loading={loading} />
       </section>
     </main>
   );

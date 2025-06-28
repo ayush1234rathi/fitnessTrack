@@ -1,20 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Button from "./Button";
 
-const NotFound = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-100">
-      <div className="bg-white shadow-2xl rounded-2xl p-12 max-w-md w-full text-center border border-gray-100">
-        <h1 className="text-7xl font-extrabold text-blue-600 mb-4">404</h1>
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Page Not Found</h2>
-        <p className="text-gray-500 mb-8">
-          The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
-        </p>
-        <Button as={Link} to="/" className="mt-4">Go to Homepage</Button>
-      </div>
+const NotFound = () => (
+  <div className="flex flex-col items-center  mx-auto">
+    <div className="justify-center bg-card border-2 border-primary rounded-2xl shadow-xl p-10 flex flex-col items-center max-w-md w-full">
+      <h1 className="text-6xl font-display font-extrabold text-primary mb-4">404</h1>
+      <h2 className="text-2xl font-display font-bold text-accent mb-2 uppercase tracking-widest">Page Not Found</h2>
+      <p className="text-text text-center mb-6">Sorry, the page you are looking for does not exist or has been moved.</p>
+      <Link to="/" className="px-6 py-2 bg-primary text-background font-display font-bold rounded-lg shadow hover:bg-accent hover:text-background transition-colors">Go Home</Link>
     </div>
-  );
-};
+  </div>
+);
 
 export default NotFound;

@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
+import StatCard from "./DashBoard/StatCard";
+import DashboardChart from "./DashBoard/DashboardChart";
+import CategoryList from "./DashBoard/CategoryList";
+import AchievementList from "./DashBoard/AchievementList";
+import workoutService from "../services/workout.service";
+import AlertMessage from "./AlertMessage";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,8 +16,6 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import workoutService from "../services/workout.service";
-import AlertMessage from "./AlertMessage";
 
 // Register chart components
 ChartJS.register(
@@ -89,71 +93,32 @@ const Dashboard = () => {
       title: {
         display: true,
         text: "Weekly Calories Burned",
+        color: '#FFEB3B',
+        font: { family: 'Oswald', size: 20, weight: 'bold' }
       },
     },
+    scales: {
+      x: { ticks: { color: '#FFEB3B' } },
+      y: { ticks: { color: '#FFEB3B' } }
+    }
   };
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen bg-dark"><span className="text-lg text-neon animate-pulse">Loading...</span></div>;
+  if (loading) return <div className="flex justify-center items-center min-h-screen bg-background"><span className="text-lg text-accent animate-pulse">Loading...</span></div>;
   if (error) return <AlertMessage type="error" message={error} className="mx-auto max-w-lg" />;
 
   return (
-    <div className="bg-dark min-h-screen py-8 px-2">
+    <div className="bg-background min-h-screen py-8 px-2">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-display font-extrabold text-neon mb-8 text-center tracking-widest uppercase drop-shadow-lg">Dashboard</h1>
-
+        <h1 className="text-4xl font-display font-extrabold text-accent mb-8 text-center tracking-widest uppercase drop-shadow-lg">Dashboard</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          <div className="bg-[#181818] p-8 rounded-xl shadow-xl border-2 border-neon flex flex-col items-center">
-            <h2 className="text-lg font-display text-neon mb-1 uppercase tracking-widest">Total Calories Burned</h2>
-            <p className="text-4xl font-extrabold text-neon">{stats.totalCaloriesBurnt} kcal</p>
-          </div>
-
-          <div className="bg-[#181818] p-8 rounded-xl shadow-xl border-2 border-neon flex flex-col items-center">
-            <h2 className="text-lg font-display text-neon mb-1 uppercase tracking-widest">Total Workouts</h2>
-            <p className="text-4xl font-extrabold text-neon">{stats.totalWorkouts}</p>
-          </div>
-
-          <div className="bg-[#181818] p-8 rounded-xl shadow-xl border-2 border-neon flex flex-col items-center">
-            <h2 className="text-lg font-display text-neon mb-1 uppercase tracking-widest">Avg Calories/Workout</h2>
-            <p className="text-4xl font-extrabold text-neon">
-              {Math.round(stats.avgCaloriesBurntPerWorkout)} kcal
-            </p>
-          </div>
+          <StatCard label="Total Calories Burned" value={`${stats.totalCaloriesBurnt} kcal`} colorClass="text-accent" />
+          <StatCard label="Total Workouts" value={stats.totalWorkouts} colorClass="text-accent" />
+          <StatCard label="Avg Calories/Workout" value={`${Math.round(stats.avgCaloriesBurntPerWorkout)} kcal`} colorClass="text-accent" />
         </div>
-
-        <div className="bg-[#181818] p-8 rounded-xl shadow-xl border-2 border-neon mb-8">
-          <Line data={chartData} options={{...chartOptions, plugins: { ...chartOptions.plugins, title: { display: true, text: 'Weekly Calories Burned', color: '#d6ff00', font: { family: 'Oswald', size: 20, weight: 'bold' } } }, scales: { x: { ticks: { color: '#d6ff00' } }, y: { ticks: { color: '#d6ff00' } } } }} />
-        </div>
-
+        <DashboardChart chartData={chartData} chartOptions={chartOptions} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-          <div className="bg-[#181818] p-8 rounded-xl shadow-xl border-2 border-neon">
-            <h2 className="text-lg font-display text-neon mb-4 uppercase tracking-widest">Workout Categories</h2>
-            <div className="space-y-2">
-              {stats.pieChartData.map((category, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-white">{category.label}</span>
-                  <span className="font-semibold text-neon">{category.value} kcal</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-[#181818] p-8 rounded-xl shadow-xl border-2 border-neon">
-            <h2 className="text-lg font-display text-neon mb-4 uppercase tracking-widest">Recent Achievements</h2>
-            <ul className="space-y-2">
-              <li className="flex items-center text-white">
-                <span className="mr-2">🏆</span>
-                {stats.totalWorkouts} workouts completed this week
-              </li>
-              <li className="flex items-center text-white">
-                <span className="mr-2">🔥</span>
-                {stats.totalCaloriesBurnt} calories burned in total
-              </li>
-              <li className="flex items-center text-white">
-                <span className="mr-2">💪</span>
-                Average of {Math.round(stats.avgCaloriesBurntPerWorkout)} calories per workout
-              </li>
-            </ul>
-          </div>
+          <CategoryList pieChartData={stats.pieChartData} />
+          <AchievementList stats={stats} />
         </div>
       </div>
     </div>

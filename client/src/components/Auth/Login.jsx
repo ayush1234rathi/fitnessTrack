@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import AlertMessage from "../AlertMessage";
 import Button from "../Button";
 import { FaRunning } from "react-icons/fa";
+import img2 from '../../assets/img2.jpg';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -35,14 +36,17 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-100 py-12 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-10 border border-gray-100">
+    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-background">
+      <div className="w-full md:w-1/2 flex justify-center items-center p-4 md:p-0">
+        <img src={img2} alt="Fitness" className="rounded-2xl object-cover w-full max-w-xs md:max-w-md max-h-[350px] md:max-h-[500px] shadow-xl" />
+      </div>
+      <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl p-6 md:p-10 border-2 border-primary flex flex-col justify-center">
         <div className="flex flex-col items-center mb-8">
-          <FaRunning className="text-5xl text-blue-600 mb-3" />
-          <h2 className="text-3xl font-extrabold text-blue-600 mb-2 tracking-tight">Sign in to your account</h2>
-          <p className="text-sm text-gray-600">
+          <FaRunning className="text-5xl text-primary mb-3" />
+          <h2 className="text-3xl font-display font-extrabold text-accent mb-2 tracking-widest uppercase">Sign in to your account</h2>
+          <p className="text-sm text-secondary">
             Or{' '}
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 underline">
+            <Link to="/register" className="font-medium text-primary hover:text-accent underline">
               create a new account
             </Link>
           </p>
@@ -51,7 +55,7 @@ const Login = () => {
           <AlertMessage type="error" message={error} />
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-gray-700 font-semibold mb-1">
+              <label htmlFor="email" className="block text-secondary font-semibold mb-1">
                 Email address
               </label>
               <input
@@ -62,12 +66,12 @@ const Login = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
+                className="w-full p-3 border-2 border-primary rounded-lg focus:ring-2 focus:ring-accent font-sans text-base bg-background text-text placeholder:text-accent transition"
                 placeholder="Email address"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-gray-700 font-semibold mb-1">
+              <label htmlFor="password" className="block text-secondary font-semibold mb-1">
                 Password
               </label>
               <input
@@ -78,7 +82,7 @@ const Login = () => {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 text-base transition"
+                className="w-full p-3 border-2 border-primary rounded-lg focus:ring-2 focus:ring-accent font-sans text-base bg-background text-text placeholder:text-accent transition"
                 placeholder="Password"
               />
             </div>
