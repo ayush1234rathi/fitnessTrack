@@ -3,6 +3,7 @@ import axios from "axios";
 import AlertMessage from "./AlertMessage";
 import ProfileAvatar from "./Profile/ProfileAvatar";
 import ProfileForm from "./Profile/ProfileForm";
+import Loading from "./Loading";
 
 // Utility for focus ring on avatar upload
 const handleKeyDown = (e, inputId) => {
@@ -115,14 +116,10 @@ export default function Profile() {
   };
 
   if (loading)
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-background">
-        <span className="text-lg text-accent animate-pulse">Loading...</span>
-      </div>
-    );
+    return <Loading message="Loading profile..." />;
 
   return (
-    <main className="bg-background min-h-screen flex items-center justify-center p-4">
+    <main className="min-h-screen flex items-center justify-center p-4 ">
       <section className="bg-card shadow-2xl rounded-2xl p-10 max-w-lg w-full border-2 border-primary flex flex-col items-center">
         {/* Heading */}
         <h1 className="text-4xl font-display font-extrabold text-accent mb-8 text-center tracking-widest uppercase drop-shadow-lg">Profile</h1>

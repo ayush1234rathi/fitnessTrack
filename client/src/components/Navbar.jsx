@@ -51,7 +51,7 @@ const Navbar = () => {
               ))}
               <button
                 onClick={handleLogout}
-                className="flex items-center font-display uppercase text-base font-bold text-secondary hover:text-background hover:bg-primary transition-colors px-3 py-1 rounded"
+                className="flex items-center font-display uppercase text-base font-bold px-3 py-1 rounded transition-colors duration-200 text-secondary hover:text-background hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <IoIosLogOut className="text-xl mr-1" />
                 Logout
@@ -108,7 +108,7 @@ const Navbar = () => {
               ))}
               <button
                 onClick={() => { setIsMenuOpen(false); handleLogout(); }}
-                className="flex items-center font-display uppercase text-2xl font-bold text-secondary hover:text-background hover:bg-primary transition-colors px-6 py-2 rounded"
+                className="flex items-center font-display uppercase text-2xl font-bold px-6 py-2 rounded transition-colors duration-200 text-secondary hover:text-background hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <IoIosLogOut className="text-2xl mr-2" />
                 Logout

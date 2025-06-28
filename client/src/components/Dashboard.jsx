@@ -5,6 +5,9 @@ import CategoryList from "./DashBoard/CategoryList";
 import AchievementList from "./DashBoard/AchievementList";
 import workoutService from "../services/workout.service";
 import AlertMessage from "./AlertMessage";
+import Loading from "./Loading";
+// import img4 from './../assets/img4.jpeg';
+import img4 from './../assets/img4.jpg';
 
 import {
   Chart as ChartJS,
@@ -101,13 +104,13 @@ const Dashboard = () => {
       x: { ticks: { color: '#FFEB3B' } },
       y: { ticks: { color: '#FFEB3B' } }
     }
-  };
+  };  
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen bg-background"><span className="text-lg text-accent animate-pulse">Loading...</span></div>;
+  if (loading) return <Loading message="Loading dashboard..." />;
   if (error) return <AlertMessage type="error" message={error} className="mx-auto max-w-lg" />;
 
   return (
-    <div className="bg-background min-h-screen py-8 px-2">
+    <div className="min-h-full py-8 px-2">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-display font-extrabold text-accent mb-8 text-center tracking-widest uppercase drop-shadow-lg">Dashboard</h1>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">

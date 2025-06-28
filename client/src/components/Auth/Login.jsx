@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import AlertMessage from "../AlertMessage";
 import Button from "../Button";
 import { FaRunning } from "react-icons/fa";
-import img2 from '../../assets/img2.jpg';
+import img4 from '../../assets/img4.jpg';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -36,10 +36,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row items-center justify-center bg-background">
-      <div className="w-full md:w-1/2 flex justify-center items-center p-4 md:p-0">
+    <div
+      className="min-h-screen flex flex-col md:flex-row items-center justify-center"
+    >
+      {/* <div className="w-full md:w-1/2 flex justify-center items-center p-4 md:p-0">
         <img src={img2} alt="Fitness" className="rounded-2xl object-cover w-full max-w-xs md:max-w-md max-h-[350px] md:max-h-[500px] shadow-xl" />
-      </div>
+      </div> */}
       <div className="w-full max-w-md bg-card rounded-2xl shadow-2xl p-6 md:p-10 border-2 border-primary flex flex-col justify-center">
         <div className="flex flex-col items-center mb-8">
           <FaRunning className="text-5xl text-primary mb-3" />

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -9,9 +10,9 @@ const Footer = () => {
           <span className="text-accent text-sm font-display uppercase">Your personal fitness companion</span>
         </div>
         <div className="flex space-x-6 text-sm font-display uppercase">
-          <a href="#" className="hover:text-background hover:bg-accent px-2 py-1 rounded transition-colors">About</a>
-          <a href="#" className="hover:text-background hover:bg-accent px-2 py-1 rounded transition-colors">Contact</a>
-          <a href="#" className="hover:text-background hover:bg-accent px-2 py-1 rounded transition-colors">Privacy Policy</a>
+          <Link to="/about" className="font-display uppercase text-base font-bold px-3 py-1 rounded transition-colors duration-200 text-text hover:text-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent">About</Link>
+          <Link to="/contact" className="font-display uppercase text-base font-bold px-3 py-1 rounded transition-colors duration-200 text-text hover:text-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent">Contact</Link>
+          <Link to="/privacy" className="font-display uppercase text-base font-bold px-3 py-1 rounded transition-colors duration-200 text-text hover:text-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-accent">Privacy Policy</Link>
         </div>
       </div>
       <div className="mt-4 text-center text-xs text-accent font-display uppercase">

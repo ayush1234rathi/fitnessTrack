@@ -5,6 +5,7 @@ import WorkoutForm from "./Workouts/WorkoutForm";
 import WorkoutSummary from "./Workouts/WorkoutSummary";
 import WorkoutDatePicker from "./Workouts/WorkoutDatePicker";
 import AlertMessage from "./AlertMessage";
+import Loading from "./Loading";
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState([]);
@@ -58,10 +59,10 @@ export default function Workouts() {
     const dayIndex = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].indexOf(dayOfWeek);
     if (dayIndex === -1) return [];
     // Start from the 1st of the month
-    const firstDay = new Date(year, month, 1);
+    // const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     let dates = [];
-    for (let d = new Date(firstDay); d <= lastDay; d.setDate(d.getDate() + 1)) {
+    for (let d = new Date(date); d <= lastDay; d.setDate(d.getDate() + 1)) {
       if (d.getDay() === dayIndex) {
         // Format as yyyy-mm-dd (local, no time part)
         const yyyy = d.getFullYear();
@@ -78,11 +79,30 @@ export default function Workouts() {
     try {
       setLoading(true);
       let dates = [];
+      const today = new Date();
+      today.setHours(0,0,0,0);
       if (newWorkout.dayOfWeek) {
-        // Generate all dates for the selected day of week in the month
-        dates = getAllDatesForDayOfWeek(selectedDate, newWorkout.dayOfWeek);
+        // Generate all dates for the selected day of week in the month, but only today or future
+        dates = getAllDatesForDayOfWeek(selectedDate, newWorkout.dayOfWeek).filter(dateStr => {
+          const [yyyy, mm, dd] = dateStr.split('-');
+          const d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+          d.setHours(0,0,0,0);
+          return d >= today;
+        });
+        if (dates.length === 0) {
+          setError("Cannot add workout to past dates. Please select today or a future date.");
+          setLoading(false);
+          return;
+        }
       } else {
         // Just use the selected date (no time part)
+        const selected = new Date(selectedDate);
+        selected.setHours(0,0,0,0);
+        if (selected < today) {
+          setError("Cannot add workout to a past date. Please select today or a future date.");
+          setLoading(false);
+          return;
+        }
         dates = [selectedDate];
       }
       await axios.post(
@@ -150,11 +170,11 @@ export default function Workouts() {
   // Calculate total calories for done workouts only
   const totalCaloriesBurned = workouts.reduce((sum, w) => w.done ? sum + (w.caloriesBurned || 0) : sum, 0);
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen bg-background"><span className="text-lg text-accent animate-pulse">Loading...</span></div>;
+  if (loading) return <Loading message="Loading workouts..." />;
   if (error) return <AlertMessage type="error" message={error} className="mx-auto max-w-lg" />;
 
   return (
-    <div className="bg-background min-h-screen py-8 px-2 flex justify-center">
+    <div className="min-h-screen py-8 px-2 flex justify-center">
       <div className="max-w-7xl w-full flex flex-col md:flex-row gap-8">
         <WorkoutDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
         <div className="flex-1 flex flex-col gap-8">
@@ -164,7 +184,7 @@ export default function Workouts() {
             <WorkoutList workouts={workouts} onDelete={handleDelete} onToggleDone={handleToggleDone} />
             <WorkoutSummary totalCaloriesBurned={totalCaloriesBurned} />
           </div>
-          <WorkoutForm newWorkout={newWorkout} setNewWorkout={setNewWorkout} handleSubmit={handleSubmit} loading={loading} error={error} />
+          <WorkoutForm newWorkout={newWorkout} setNewWorkout={setNewWorkout} handleSubmit={handleSubmit} loading={loading} error={error} selectedDate={selectedDate} />
         </div>
       </div>
     </div>
