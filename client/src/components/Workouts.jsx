@@ -98,11 +98,11 @@ export default function Workouts() {
       } else {
         const selected = new Date(selectedDate);
         selected.setHours(0,0,0,0);
-        if (selected < today) {
-          setError("Cannot add workout to a past date. Please select today or a future date.");
-          setLoading(false);
-          return;
-        }
+        // if (selected < today) {
+        //   setError("Cannot add workout to a past date. Please select today or a future date.");
+        //   setLoading(false);
+        //   return;
+        // }
         dates = [selectedDate];
       }
       await axios.post(

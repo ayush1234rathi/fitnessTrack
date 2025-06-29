@@ -32,7 +32,7 @@ function App() {
     <AuthProvider>
       <div className=" flex flex-col min-h-screen bg-center bg-no-repeat bg-cover" style={{ backgroundImage }}>
         <Navbar />
-        <main className="flex-grow ">
+        <main className="flex-grow p-2">
           <Suspense fallback={<div className="flex justify-center items-center h-full">Loading...</div>}>
             <Routes>
               <Route path="/login" element={<Login />} />
