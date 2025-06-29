@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Dashboard from "./components/Dashboard";
-import Workouts from "./components/Workouts";
-import Profile from "./components/Profile";
-import Login from "./components/Auth/Login";
-import Register from "./components/Auth/Register";
-import NotFound from "./components/NotFound";
 import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import img4 from "./assets/img4.jpg"
 import img5 from "./assets/img5.jpg"
+
+const Dashboard = lazy(() => import("./components/Dashboard"));
+const Workouts = lazy(() => import("./components/Workouts"));
+const Profile = lazy(() => import("./components/Profile"));
+const Login = lazy(() => import("./components/Auth/Login"));
+const Register = lazy(() => import("./components/Auth/Register"));
+const NotFound = lazy(() => import("./components/NotFound"));
 
 function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -28,11 +29,11 @@ function App() {
   const backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${isMobile ? img5 : img4})`;
 
   return (
-    // <Router>
-      <AuthProvider>
-        <div className=" flex flex-col min-h-screen bg-center bg-no-repeat bg-cover" style={{ backgroundImage }}>
-          <Navbar />
-          <main className="flex-grow ">
+    <AuthProvider>
+      <div className=" flex flex-col min-h-screen bg-center bg-no-repeat bg-cover" style={{ backgroundImage }}>
+        <Navbar />
+        <main className="flex-grow ">
+          <Suspense fallback={<div className="flex justify-center items-center h-full">Loading...</div>}>
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -62,11 +63,11 @@ function App() {
               />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </main>
-          <Footer />
-        </div>
-      </AuthProvider>
-    // </Router>
+          </Suspense>
+        </main>
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 }
 

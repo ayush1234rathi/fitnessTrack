@@ -2,13 +2,14 @@ import React from "react";
 import Button from "../Button";
 import { FiTrash2 } from "react-icons/fi";
 
-const WorkoutCard = ({ workout, onDelete, onToggleDone }) => (
+const WorkoutCard = React.memo(({ workout, onDelete, onToggleDone, loading }) => (
   <div className="relative bg-card shadow-xl rounded-xl border-l-4 border-primary p-6 hover:scale-[1.02] transition-transform duration-200 flex flex-col justify-between min-h-[180px]">
     <button
       type="button"
       aria-label="Delete workout"
       className="absolute top-3 right-3 text-primary hover:text-background hover:bg-primary p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
       onClick={() => onDelete(workout._id)}
+      disabled={loading}
     >
       <FiTrash2 className="w-5 h-5" />
     </button>
@@ -26,10 +27,12 @@ const WorkoutCard = ({ workout, onDelete, onToggleDone }) => (
       type="button"
       variant={workout.done ? "secondary" : "primary"}
       onClick={() => onToggleDone(workout._id)}
+      loading={loading}
+      disabled={loading}
     >
       {workout.done ? "Done" : "Mark as Done"}
     </Button>
   </div>
-);
+));
 
 export default WorkoutCard; 

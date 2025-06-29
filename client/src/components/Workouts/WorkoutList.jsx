@@ -1,17 +1,24 @@
-import React from "react";
+import React, { useMemo } from "react";
 import WorkoutCard from "./WorkoutCard";
 
-const WorkoutList = ({ workouts, onDelete, onToggleDone }) => (
-  <div className="grid md:grid-cols-2 gap-6">
-    {workouts.map((workout) => (
+const WorkoutList = React.memo(({ workouts, onDelete, onToggleDone, loadingIds = [] }) => {
+  const workoutCards = useMemo(() => (
+    workouts.map((workout) => (
       <WorkoutCard
         key={workout._id}
         workout={workout}
         onDelete={onDelete}
         onToggleDone={onToggleDone}
+        loading={loadingIds.includes(workout._id)}
       />
-    ))}
-  </div>
-);
+    ))
+  ), [workouts, onDelete, onToggleDone, loadingIds]);
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      {workoutCards}
+    </div>
+  );
+});
 
 export default WorkoutList; 

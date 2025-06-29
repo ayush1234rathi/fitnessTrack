@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Button({
+export default React.memo(function Button({
   children,
   type = "button",
   variant = "primary",
@@ -44,4 +44,4 @@ export default function Button({
       {children}
     </button>
   );
-} 
+}); 

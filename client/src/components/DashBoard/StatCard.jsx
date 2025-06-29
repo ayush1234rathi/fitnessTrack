@@ -7,4 +7,4 @@ const StatCard = ({ label, value, colorClass }) => (
   </div>
 );
 
-export default StatCard; 
+export default React.memo(StatCard); 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import AlertMessage from "./AlertMessage";
 import ProfileAvatar from "./Profile/ProfileAvatar";
@@ -49,12 +49,12 @@ export default function Profile() {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setUser((prevUser) => ({ ...prevUser, [name]: value }));
-  };
+  }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
@@ -75,9 +75,9 @@ export default function Profile() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = useCallback(async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) {
@@ -113,7 +113,7 @@ export default function Profile() {
     } finally {
       setUploading(false);
     }
-  };
+  }, []);
 
   if (loading)
     return <Loading message="Loading profile..." />;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import WorkoutList from "./Workouts/WorkoutList";
 import WorkoutForm from "./Workouts/WorkoutForm";
@@ -29,6 +29,7 @@ export default function Workouts() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loadingIds, setLoadingIds] = useState([]);
 
   useEffect(() => {
     fetchWorkouts();
@@ -135,37 +136,37 @@ export default function Workouts() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = useCallback(async (id) => {
+    setLoadingIds((ids) => [...ids, id]);
     try {
-      setLoading(true);
       await axios.delete(`http://localhost:8000/api/v1/workout/delete/${id}`, {
         withCredentials: true,
       });
-      await fetchWorkouts();
+      setWorkouts((prev) => prev.filter(w => w._id !== id));
       setError("");
     } catch (err) {
       setError("Failed to delete workout");
       console.error("Error deleting workout:", err);
     } finally {
-      setLoading(false);
+      setLoadingIds((ids) => ids.filter((loadingId) => loadingId !== id));
     }
-  };
+  }, []);
 
-  const handleToggleDone = async (id) => {
+  const handleToggleDone = useCallback(async (id) => {
+    setLoadingIds((ids) => [...ids, id]);
     try {
-      setLoading(true);
       await axios.patch(`http://localhost:8000/api/v1/workout/toggleDone/${id}`, {}, {
         withCredentials: true,
       });
-      await fetchWorkouts();
+      setWorkouts((prev) => prev.map(w => w._id === id ? { ...w, done: !w.done } : w));
       setError("");
     } catch (err) {
       setError("Failed to update workout status");
       console.error("Error toggling done status:", err);
     } finally {
-      setLoading(false);
+      setLoadingIds((ids) => ids.filter((loadingId) => loadingId !== id));
     }
-  };
+  }, []);
 
   // Calculate total calories for done workouts only
   const totalCaloriesBurned = workouts.reduce((sum, w) => w.done ? sum + (w.caloriesBurned || 0) : sum, 0);
@@ -181,7 +182,7 @@ export default function Workouts() {
           <div>
             <h1 className="text-3xl font-display font-extrabold text-accent mb-6 text-center tracking-widest uppercase drop-shadow-lg">Workout Tracker</h1>
             <h2 className="text-xl font-display text-accent mb-4 uppercase tracking-widest">Today's Workouts</h2>
-            <WorkoutList workouts={workouts} onDelete={handleDelete} onToggleDone={handleToggleDone} />
+            <WorkoutList workouts={workouts} onDelete={handleDelete} onToggleDone={handleToggleDone} loadingIds={loadingIds} />
             <WorkoutSummary totalCaloriesBurned={totalCaloriesBurned} />
           </div>
           <WorkoutForm newWorkout={newWorkout} setNewWorkout={setNewWorkout} handleSubmit={handleSubmit} loading={loading} error={error} selectedDate={selectedDate} />
