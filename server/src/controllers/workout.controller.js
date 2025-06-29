@@ -3,6 +3,7 @@ import { Workout } from "../models/workout.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import axios from "axios";
 
 const getUserDashboard = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
@@ -121,27 +122,82 @@ const addWorkout = asyncHandler(async (req, res) => {
     }
   }
 
-  const caloriesBurned = calculateCaloriesBurnt(weight, duration);
+  // Fetch user's body weight
+  const user = await User.findById(req.user._id);
+  if (!user || !user.weight) {
+    throw new ApiError(400, "User profile must have a body weight to calculate calories.");
+  }
+  const bodyWeight = user.weight;
 
-  const createdWorkouts = await Promise.all(
-    dates.map(dateStr => {
-      // Use new Date(dateStr) directly, which will interpret T00:00:00 as local time
-      const localDate = new Date(dateStr);
-      return Workout.create({
-        user: req.user._id,
-        category,
+  // Gemini API integration
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_API_KEY) {
+    throw new ApiError(500, "Gemini API key not configured");
+  }
+
+  // Helper to call Gemini API
+  async function getCaloriesFromGemini({ workoutName, category, sets, reps, bodyWeight, weightLifted, duration }) {
+    const prompt = `Calculate the calories burned (in kcal) for this workout. Only return the number, no explanation.\nWorkout name: ${workoutName}\nCategory: ${category}\nReps: ${reps}\nSets: ${sets}\nBody weight: ${bodyWeight} kg\nWeight lifted: ${weightLifted} kg\nDuration: ${duration} minutes`;
+    try {
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          contents: [
+            {
+              parts: [
+                { text: prompt }
+              ]
+            }
+          ]
+        },
+        {
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+      // Parse Gemini response for just the number
+      const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+      const match = text.match(/\d+(\.\d+)?/);
+      if (!match) throw new Error("No calorie value returned");
+      return parseFloat(match[0]);
+    } catch (err) {
+      throw new ApiError(503, "unable to connect");
+    }
+  }
+
+  // Create workouts with Gemini-calculated calories
+  let createdWorkouts = [];
+  for (const dateStr of dates) {
+    const localDate = new Date(dateStr);
+    let caloriesBurned;
+    try {
+      caloriesBurned = await getCaloriesFromGemini({
         workoutName,
+        category,
         sets: sets || 0,
         reps: reps || 0,
-        weight: weight || 0,
-        duration: duration || 0,
-        caloriesBurned,
-        date: localDate,
-        done: false,
-        ...(dayOfWeek ? { dayOfWeek } : {}),
+        bodyWeight,
+        weightLifted: weight || 0,
+        duration: duration || 0
       });
-    })
-  );
+    } catch (err) {
+      // If Gemini fails, stop and return error (do not add workout)
+      throw err;
+    }
+    const workout = await Workout.create({
+      user: req.user._id,
+      category,
+      workoutName,
+      sets: sets || 0,
+      reps: reps || 0,
+      weight: weight || 0,
+      duration: duration || 0,
+      caloriesBurned,
+      date: localDate,
+      done: false,
+      ...(dayOfWeek ? { dayOfWeek } : {}),
+    });
+    createdWorkouts.push(workout);
+  }
 
   return res.status(201).json(new ApiResponse(201, createdWorkouts, "Workouts added successfully"));
 });
@@ -202,12 +258,5 @@ const deleteWorkout = asyncHandler(async (req, res) => {
   }
   return res.status(200).json(new ApiResponse(200, {}, "Workout deleted successfully"));
 });
-
-const calculateCaloriesBurnt = (weight, duration) => {
-  const weightInKg = parseFloat(weight) || 0;
-  const durationInMinutes = parseFloat(duration) || 0;
-  const caloriesBurntPerMinute = 5;
-  return durationInMinutes * caloriesBurntPerMinute * weightInKg;
-};
 
 export { addWorkout, getWorkoutsByDate, getUserDashboard, deleteWorkout, toggleWorkoutDone };

@@ -30,6 +30,7 @@ export default function Workouts() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [loadingIds, setLoadingIds] = useState([]);
+  const [popup, setPopup] = useState("");
 
   useEffect(() => {
     fetchWorkouts();
@@ -83,7 +84,6 @@ export default function Workouts() {
       const today = new Date();
       today.setHours(0,0,0,0);
       if (newWorkout.dayOfWeek) {
-        // Generate all dates for the selected day of week in the month, but only today or future
         dates = getAllDatesForDayOfWeek(selectedDate, newWorkout.dayOfWeek).filter(dateStr => {
           const [yyyy, mm, dd] = dateStr.split('-');
           const d = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
@@ -96,7 +96,6 @@ export default function Workouts() {
           return;
         }
       } else {
-        // Just use the selected date (no time part)
         const selected = new Date(selectedDate);
         selected.setHours(0,0,0,0);
         if (selected < today) {
@@ -129,7 +128,12 @@ export default function Workouts() {
       });
       setError("");
     } catch (err) {
-      setError("Failed to add workout");
+      // Check for Gemini error
+      if (err.response && err.response.data && err.response.data.message === "unable to connect") {
+        setPopup("unable to connect");
+      } else {
+        setError("Failed to add workout");
+      }
       console.error("Error adding workout:", err);
     } finally {
       setLoading(false);
@@ -176,6 +180,19 @@ export default function Workouts() {
 
   return (
     <div className="min-h-screen py-8 px-2 flex justify-center">
+      {popup && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white border-2 border-primary rounded-xl shadow-2xl p-8 flex flex-col items-center">
+            <span className="text-xl text-red-600 font-bold mb-4">{popup}</span>
+            <button
+              className="bg-primary text-background px-6 py-2 rounded-lg font-bold mt-2"
+              onClick={() => setPopup("")}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <div className="max-w-7xl w-full flex flex-col md:flex-row gap-8">
         <WorkoutDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
         <div className="flex-1 flex flex-col gap-8">
