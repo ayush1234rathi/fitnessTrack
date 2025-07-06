@@ -19,7 +19,7 @@ function App() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768); // Tailwind's md breakpoint is 768px
+      setIsMobile(window.innerWidth < 768);
     };
     handleResize(); // run on mount
     window.addEventListener('resize', handleResize);

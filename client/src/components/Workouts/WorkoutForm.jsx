@@ -39,16 +39,16 @@ const WorkoutForm = ({ newWorkout, setNewWorkout, handleSubmit, loading, error, 
             <option
               key={day}
               value={day}
-              style={day === currentDay ? { fontWeight: 'bold', color: '#00FFD0' } : {}}
+              style={day === currentDay ? { fontWeight: 'bold', color: '#ff5252' } : {}}
             >
               {day}
             </option>
           ))}
         </select>
-        <input type="number" placeholder="Sets" value={newWorkout.sets} onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
-        <input type="number" placeholder="Reps" value={newWorkout.reps} onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
-        <input type="number" placeholder="Weight (kg)" value={newWorkout.weight} onChange={(e) => setNewWorkout({ ...newWorkout, weight: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
-        <input type="number" placeholder="Duration (min)" value={newWorkout.duration} onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
+        <input type="number" min={0} placeholder="Sets" value={newWorkout.sets} onChange={(e) => setNewWorkout({ ...newWorkout, sets: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
+        <input type="number" min={0} placeholder="Reps" value={newWorkout.reps} onChange={(e) => setNewWorkout({ ...newWorkout, reps: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
+        <input type="number" min={0} placeholder="Weight (kg)" value={newWorkout.weight} onChange={(e) => setNewWorkout({ ...newWorkout, weight: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
+        <input type="number" min={0} placeholder="Duration (min)" value={newWorkout.duration} onChange={(e) => setNewWorkout({ ...newWorkout, duration: e.target.value })} className="border-2 border-primary p-3 rounded-lg focus:ring-2 focus:ring-accent w-full text-text bg-background placeholder:text-accent" required/>
         <Button type="submit" loading={loading} className="w-full">Add Workout</Button>
       </form>
     </div>
