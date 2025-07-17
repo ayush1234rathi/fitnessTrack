@@ -36,7 +36,7 @@ export default function Profile() {
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8000/api/v1/users/CurUser", {
+      const response = await axios.get("https://fitness-server-0bzg.onrender.com/api/v1/users/CurUser", {
         withCredentials: true,
       });
       setUser(response.data.data);
@@ -59,7 +59,7 @@ export default function Profile() {
     try {
       setLoading(true);
       const response = await axios.patch(
-        `http://localhost:8000/api/v1/users/update/${user._id}`,
+        `https://fitness-server-0bzg.onrender.com/api/v1/users/update/${user._id}`,
         user,
         {
           withCredentials: true,
@@ -94,7 +94,7 @@ export default function Profile() {
       setUploading(true);
       setError("");
       const response = await axios.post(
-        "http://localhost:8000/api/v1/users/upload-profile-picture",
+        "https://fitness-server-0bzg.onrender.com/api/v1/users/upload-profile-picture",
         formData,
         {
           withCredentials: true,

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api/v1/workout";
+const API_URL = "https://fitness-server-0bzg.onrender.com/api/v1/workout";
 
 const axiosInstance = axios.create({
   baseURL: API_URL,

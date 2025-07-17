@@ -40,7 +40,7 @@ export default function Workouts() {
     try {
       setLoading(true);
       // Always send date as yyyy-mm-dd (no time part)
-      const response = await axios.get(`http://localhost:8000/api/v1/workout/getWorkoutsByDate?date=${selectedDate}`, {
+      const response = await axios.get(`https://fitness-server-0bzg.onrender.com/api/v1/workout/getWorkoutsByDate?date=${selectedDate}`, {
         withCredentials: true
       });
       setWorkouts(response.data.todaysWorkouts);
@@ -106,7 +106,7 @@ export default function Workouts() {
         dates = [selectedDate];
       }
       await axios.post(
-        "http://localhost:8000/api/v1/workout/add",
+        "https://fitness-server-0bzg.onrender.com/api/v1/workout/add",
         {
           ...newWorkout,
           dates,
@@ -143,7 +143,7 @@ export default function Workouts() {
   const handleDelete = useCallback(async (id) => {
     setLoadingIds((ids) => [...ids, id]);
     try {
-      await axios.delete(`http://localhost:8000/api/v1/workout/delete/${id}`, {
+      await axios.delete(`https://fitness-server-0bzg.onrender.com/api/v1/workout/delete/${id}`, {
         withCredentials: true,
       });
       setWorkouts((prev) => prev.filter(w => w._id !== id));
@@ -159,7 +159,7 @@ export default function Workouts() {
   const handleToggleDone = useCallback(async (id) => {
     setLoadingIds((ids) => [...ids, id]);
     try {
-      await axios.patch(`http://localhost:8000/api/v1/workout/toggleDone/${id}`, {}, {
+      await axios.patch(`https://fitness-server-0bzg.onrender.com/api/v1/workout/toggleDone/${id}`, {}, {
         withCredentials: true,
       });
       setWorkouts((prev) => prev.map(w => w._id === id ? { ...w, done: !w.done } : w));
