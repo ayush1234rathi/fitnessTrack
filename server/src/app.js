@@ -7,7 +7,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: "https://fitness-client-jckp.onrender.com",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
