@@ -3,7 +3,8 @@ import { Workout } from "../models/workout.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
-import axios from "axios";
+// import axios from "axios";
+import OpenAI from "openai";
 
 const getUserDashboard = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
@@ -102,104 +103,235 @@ const ALLOWED_CATEGORIES = [
   "Calves"
 ];
 
-const addWorkout = asyncHandler(async (req, res) => {
-  const { category, workoutName, sets, reps, weight, duration, dates, dayOfWeek } = req.body;
+// const addWorkout = asyncHandler(async (req, res) => {
+//   const { category, workoutName, sets, reps, weight, duration, dates, dayOfWeek } = req.body;
 
-  if (!category || !workoutName || !dates || !Array.isArray(dates) || dates.length === 0) {
-    throw new ApiError(400, "Category, workout name, and dates (array) are required");
+//   if (!category || !workoutName || !dates || !Array.isArray(dates) || dates.length === 0) {
+//     throw new ApiError(400, "Category, workout name, and dates (array) are required");
+//   }
+
+//   if (!ALLOWED_CATEGORIES.includes(category)) {
+//     throw new ApiError(400, "Invalid category. Allowed: " + ALLOWED_CATEGORIES.join(", "));
+//   }
+
+//   if (dayOfWeek) {
+//     const allowedDays = [
+//       'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+//     ];
+//     if (!allowedDays.includes(dayOfWeek)) {
+//       throw new ApiError(400, "Invalid dayOfWeek. Allowed: " + allowedDays.join(", "));
+//     }
+//   }
+
+//   // Fetch user's body weight
+//   const user = await User.findById(req.user._id);
+//   if (!user || !user.weight) {
+//     throw new ApiError(400, "User profile must have a body weight to calculate calories.");
+//   }
+//   const bodyWeight = user.weight;
+
+//   // Gemini API integration
+//   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+//   if (!GEMINI_API_KEY) {
+//     throw new ApiError(500, "Gemini API key not configured");
+//   }
+
+//   // Helper to call Gemini API
+//   async function getCaloriesFromGemini({ workoutName, category, sets, reps, bodyWeight, weightLifted, duration }) {
+//     const prompt = `Calculate the calories burned (in kcal) for this workout. Only return the number, no explanation.\nWorkout name: ${workoutName}\nCategory: ${category}\nReps: ${reps}\nSets: ${sets}\nBody weight: ${bodyWeight} kg\nWeight lifted: ${weightLifted} kg\nDuration: ${duration} minutes`;
+//     try {
+//       const response = await axios.post(
+//         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+//         {
+//           contents: [
+//             {
+//               parts: [
+//                 { text: prompt }
+//               ]
+//             }
+//           ]
+//         },
+//         {
+//           headers: { 'Content-Type': 'application/json' }
+//         }
+//       );
+
+//       console.log(response);
+//       // Parse Gemini response for just the number
+//       const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+//       const match = text.match(/\d+(\.\d+)?/);
+//       if (!match) throw new Error("No calorie value returned");
+//       return parseFloat(match[0]);
+//     } catch (err) {
+//       throw new ApiError(503, "unable to connect");
+//     }
+//   }
+
+//   // Create workouts with Gemini-calculated calories
+//   let createdWorkouts = [];
+//   for (const dateStr of dates) {
+//     const localDate = new Date(dateStr);
+//     let caloriesBurned;
+//     try {
+//       caloriesBurned = await getCaloriesFromGemini({
+//         workoutName,
+//         category,
+//         sets: sets || 0,
+//         reps: reps || 0,
+//         bodyWeight,
+//         weightLifted: weight || 0,
+//         duration: duration || 0
+//       });
+//     } catch (err) {
+//       // If Gemini fails, stop and return error (do not add workout)
+//       throw err;
+//     }
+//     const workout = await Workout.create({
+//       user: req.user._id,
+//       category,
+//       workoutName,
+//       sets: sets || 0,
+//       reps: reps || 0,
+//       weight: weight || 0,
+//       duration: duration || 0,
+//       caloriesBurned,
+//       date: localDate,
+//       done: false,
+//       ...(dayOfWeek ? { dayOfWeek } : {}),
+//     });
+//     createdWorkouts.push(workout);
+//   }
+
+//   return res.status(201).json(new ApiResponse(201, createdWorkouts, "Workouts added successfully"));
+// });
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+const addWorkout = asyncHandler(async (req, res) => {
+  const {
+    category,
+    workoutName,
+    sets = 0,
+    reps = 0,
+    weight = 0,
+    duration = 0,
+    dates,
+    dayOfWeek
+  } = req.body;
+
+  /* -------------------- VALIDATIONS -------------------- */
+  if (!category || !workoutName || !Array.isArray(dates) || dates.length === 0) {
+    throw new ApiError(400, "Category, workout name and dates array are required");
   }
 
   if (!ALLOWED_CATEGORIES.includes(category)) {
-    throw new ApiError(400, "Invalid category. Allowed: " + ALLOWED_CATEGORIES.join(", "));
+    throw new ApiError(400, `Invalid category. Allowed: ${ALLOWED_CATEGORIES.join(", ")}`);
   }
 
   if (dayOfWeek) {
     const allowedDays = [
-      'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+      "Sunday", "Monday", "Tuesday",
+      "Wednesday", "Thursday", "Friday", "Saturday"
     ];
     if (!allowedDays.includes(dayOfWeek)) {
-      throw new ApiError(400, "Invalid dayOfWeek. Allowed: " + allowedDays.join(", "));
+      throw new ApiError(400, `Invalid dayOfWeek. Allowed: ${allowedDays.join(", ")}`);
     }
   }
 
-  // Fetch user's body weight
-  const user = await User.findById(req.user._id);
+  /* -------------------- USER DATA -------------------- */
+  const user = await User.findById(req.user._id).select("weight");
   if (!user || !user.weight) {
-    throw new ApiError(400, "User profile must have a body weight to calculate calories.");
+    throw new ApiError(400, "User profile must have body weight");
   }
+
   const bodyWeight = user.weight;
 
-  // Gemini API integration
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_API_KEY) {
-    throw new ApiError(500, "Gemini API key not configured");
+  if (!process.env.OPENAI_API_KEY) {
+    throw new ApiError(500, "OpenAI API key not configured");
   }
 
-  // Helper to call Gemini API
-  async function getCaloriesFromGemini({ workoutName, category, sets, reps, bodyWeight, weightLifted, duration }) {
-    const prompt = `Calculate the calories burned (in kcal) for this workout. Only return the number, no explanation.\nWorkout name: ${workoutName}\nCategory: ${category}\nReps: ${reps}\nSets: ${sets}\nBody weight: ${bodyWeight} kg\nWeight lifted: ${weightLifted} kg\nDuration: ${duration} minutes`;
+  /* -------------------- CALORIE CALCULATION -------------------- */
+  const getCaloriesFromOpenAI = async () => {
     try {
-      const response = await axios.post(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          contents: [
-            {
-              parts: [
-                { text: prompt }
-              ]
-            }
-          ]
-        },
-        {
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
-      // Parse Gemini response for just the number
-      const text = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      const match = text.match(/\d+(\.\d+)?/);
-      if (!match) throw new Error("No calorie value returned");
-      return parseFloat(match[0]);
-    } catch (err) {
-      throw new ApiError(503, "unable to connect");
-    }
-  }
-
-  // Create workouts with Gemini-calculated calories
-  let createdWorkouts = [];
-  for (const dateStr of dates) {
-    const localDate = new Date(dateStr);
-    let caloriesBurned;
-    try {
-      caloriesBurned = await getCaloriesFromGemini({
-        workoutName,
-        category,
-        sets: sets || 0,
-        reps: reps || 0,
-        bodyWeight,
-        weightLifted: weight || 0,
-        duration: duration || 0
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a fitness calorie calculator. Return ONLY a number in kcal. No text, no units, no explanation."
+          },
+          {
+            role: "user",
+            content: `
+Workout: ${workoutName}
+Category: ${category}
+Sets: ${sets}
+Reps: ${reps}
+Body Weight: ${bodyWeight} kg
+Weight Lifted: ${weight} kg
+Duration: ${duration} minutes
+`
+          }
+        ],
+        temperature: 0
       });
-    } catch (err) {
-      // If Gemini fails, stop and return error (do not add workout)
-      throw err;
+
+      const text = completion.choices[0]?.message?.content?.trim();
+      const calories = Number(text?.match(/\d+(\.\d+)?/)?.[0]);
+
+      if (Number.isNaN(calories)) {
+        throw new Error("Invalid calorie value from OpenAI");
+      }
+
+      return calories;
+    } catch (error) {
+      console.error("OpenAI error:", error.message);
+      throw error;
     }
+  };
+
+  /* -------------------- FALLBACK (NEVER FAIL) -------------------- */
+  const fallbackCalories = () => {
+    const MET = category.toLowerCase() === "cardio" ? 8 : 6;
+    return Math.round((MET * bodyWeight * duration) / 60);
+  };
+
+  let caloriesBurned;
+
+  try {
+    caloriesBurned = await getCaloriesFromOpenAI();
+  } catch {
+    console.warn("Using fallback calorie calculation");
+    caloriesBurned = fallbackCalories();
+  }
+
+  /* -------------------- CREATE WORKOUTS -------------------- */
+  const createdWorkouts = [];
+
+  for (const dateStr of dates) {
     const workout = await Workout.create({
       user: req.user._id,
       category,
       workoutName,
-      sets: sets || 0,
-      reps: reps || 0,
-      weight: weight || 0,
-      duration: duration || 0,
+      sets,
+      reps,
+      weight,
+      duration,
       caloriesBurned,
-      date: localDate,
+      date: new Date(dateStr),
       done: false,
-      ...(dayOfWeek ? { dayOfWeek } : {}),
+      ...(dayOfWeek && { dayOfWeek })
     });
+
     createdWorkouts.push(workout);
   }
 
-  return res.status(201).json(new ApiResponse(201, createdWorkouts, "Workouts added successfully"));
+  return res.status(201).json(
+    new ApiResponse(201, createdWorkouts, "Workouts added successfully")
+  );
 });
 
 const toggleWorkoutDone = asyncHandler(async (req, res) => {
